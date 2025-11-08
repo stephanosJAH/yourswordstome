@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función helper para verificar autenticación
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Función helper para verificar que el usuario es el propietario
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Permitir lectura solo al propietario
+      allow read: if isOwner(userId);
+      
+      // Permitir crear solo al propietario (primer login)
+      allow create: if isOwner(userId);
+      
+      // Permitir actualizar solo al propietario
+      // Permitir modificación de tokens y totalGenerated para el sistema
+      allow update: if isOwner(userId);
+      
+      // No permitir eliminación
+      allow delete: if false;
+      
+      // History subcollection
+      match /history/{historyId} {
+        // Solo lectura para el propietario
+        allow read: if isOwner(userId);
+        
+        // Permitir creación al propietario
+        allow create: if isOwner(userId);
+        
+        // No permitir modificación o eliminación
+        allow update, delete: if false;
+      }
+    }
+    
+    // Denegar acceso a cualquier otra colección
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
