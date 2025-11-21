@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { validateReference } from '../services/bibleService';
 import { getVerseGeneratorService } from '../services/verseGeneratorService';
 import { hasUnlimitedAccess } from '../services/userService';
-import { BookOpen, LogOut, Sparkles, Info } from 'lucide-react';
+import { BookOpen, LogOut, Sparkles, Info, Users } from 'lucide-react';
+import CustomNameModal from '../components/CustomNameModal';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ const Dashboard = () => {
   const [temperature, setTemperature] = useState(0.5);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customName, setCustomName] = useState(null);
 
   // Verificar si el usuario tiene acceso ilimitado
   const isUnlimited = userData && hasUnlimitedAccess(userData.email);
@@ -45,7 +48,21 @@ const Dashboard = () => {
     }
   };
 
-  const handleGenerate = async () => {
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmCustomName = (name) => {
+    setCustomName(name);
+    setIsModalOpen(false);
+    handleGenerate(name);
+  };
+
+  const handleGenerate = async (nameOverride = null) => {
     setError('');
 
     // Validar referencia
@@ -69,9 +86,10 @@ const Dashboard = () => {
 
     try {
       const verseGenerator = getVerseGeneratorService();
+      const nameToUse = nameOverride || getFirstName(user.displayName);
       const result = await verseGenerator.generatePersonalizedVerse({
         userId: user.uid,
-        userName: getFirstName(user.displayName),
+        userName: nameToUse,
         verseReference: verseReference.trim(),
         temperature
       });
@@ -152,7 +170,7 @@ const Dashboard = () => {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-primary mb-3">
-              Crea tu Versículo Personalizado
+              Hola <span className="italic text-accent font-normal text-5xl" style={{ fontFamily: 'Playfair Display' }}>{getFirstName(user?.displayName)}</span>, genera tu versículo personalizado
             </h1>
             <p className="text-gray-600">
               Ingresa la referencia de tu versículo favorito y personalízalo con IA
@@ -220,24 +238,35 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Generate Button */}
-            <button
-              onClick={handleGenerate}
-              disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
-              className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  <span>Generando...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles size={20} />
-                  <span>Generar Versículo</span>
-                </>
-              )}
-            </button>
+            {/* Generate Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={() => handleGenerate()}
+                disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
+                className="w-full bg-accent hover:bg-accent/90 text-white font-semibold py-4 rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Generando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={20} />
+                    <span>Generar Versículo</span>
+                  </>
+                )}
+              </button>
+              
+              <button
+                onClick={handleOpenModal}
+                disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
+                className="w-full bg-white border-2 border-accent text-accent hover:bg-accent/5 font-semibold py-4 rounded-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
+              >
+                <Users size={20} />
+                <span>Generar para otra persona</span>
+              </button>
+            </div>
 
             {/* Info adicional */}
             <div className="text-center text-sm text-gray-500">
@@ -269,6 +298,13 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+      {/* Modal de nombre personalizado */}
+      <CustomNameModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmCustomName}
+      />
     </div>
   );
 };
