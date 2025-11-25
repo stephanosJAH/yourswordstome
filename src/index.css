@@ -1,26 +1,77 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #F7FAFC;
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Montserrat', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #F7FAFC;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-* {
-  box-sizing: border-box;
+/* Smooth transitions for dark mode */
+@layer utilities {
+  * {
+    transition-property: background-color, border-color, color, fill, stroke, opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}
+
+/* Background pattern - Subtle dots */
+@layer components {
+  .background-gradient {
+    background: transparent;
+  }
+
+  .ethereal-blur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(147, 197, 253, 0.30) 0%, transparent 40%),
+        radial-gradient(circle at 85% 70%, rgba(236, 72, 153, 0.30) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.25) 0%, transparent 50%);
+    pointer-events: none;
+  }
 }
 
 /* Animaciones personalizadas */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -29,7 +80,11 @@ body {
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 1.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
 }
 
 /* Estilos para sliders */
@@ -98,4 +153,45 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .tooltip:hover::before {
   opacity: 1;
+}
+
+/* View Transitions API */
+@layer utilities {
+  /* Transición suave para el resultado del versículo */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.5s;
+  }
+
+  /* Fade in para contenido nuevo */
+  ::view-transition-new(root) {
+    animation-name: fade-in;
+  }
+
+  /* Fade out para contenido viejo */
+  ::view-transition-old(root) {
+    animation-name: fade-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
 }

@@ -4,6 +4,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import ResultPage from './pages/ResultPage';
+import AboutPage from './pages/AboutPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 import './index.css';
 
 // Componente para rutas protegidas
@@ -29,6 +32,9 @@ function AppRoutes() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route
           path="/dashboard"
           element={

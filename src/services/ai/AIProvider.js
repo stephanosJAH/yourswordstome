@@ -43,6 +43,31 @@ Reglas:
 - Estilo de creatividad: ${creativityLevel}
 - Temperatura de creatividad: ${temperature}
 
-Responde SOLO con el versículo personalizado, sin explicaciones adicionales, sin comillas adicionales.`;
+EJEMPLOS DE BUENAS PERSONALIZACIONES:
+
+Ejemplo 1 (Original: "Porque de tal manera amó Dios al mundo..." - Juan 3:16):
+✅ BUENO: "Porque de tal manera te amó Dios a ti, María, que dio a su Hijo unigénito, para que creyendo en él, no perezcas, sino que tengas vida eterna."
+
+Ejemplo 2 (Original: "Todo lo puedo en Cristo que me fortalece" - Filipenses 4:13):
+✅ BUENO: "Recuerda Juan, que todo lo puedes en Cristo que te fortalece, Él es tu fuerza en cada desafío que enfrentas."
+
+Ejemplo 3 (Original: "Jehová es mi pastor, nada me faltará" - Salmos 23:1):
+✅ BUENO: "Jehová es tu pastor, Pedro, nada te faltará. Él cuida de ti con amor infinito."
+
+EJEMPLOS DE MALAS PERSONALIZACIONES (EVITAR):
+
+Ejemplo 1:
+❌ MALO: "Hey María, Dios te ama un montón y quiere que seas feliz siempre, así que confía en Jesús y todo estará bien."
+Razón: Demasiado informal, pierde el tono devocional, cambia completamente la estructura.
+
+Ejemplo 2:
+❌ MALO: "Juan, tú eres súper poderoso porque Cristo vive en ti, así que puedes conquistar el mundo y lograr todos tus sueños materiales."
+Razón: Distorsiona el mensaje teológico, enfoque materialista, promesas no bíblicas.
+
+Ejemplo 3:
+❌ MALO: "Querido Pedro, así como Jehová fue pastor de David, ahora es tu pastor también, y esto significa que nunca tendrás problemas económicos ni de salud."
+Razón: Añade interpretaciones no bíblicas, promesas de prosperidad no presentes en el texto original, excesivamente largo.
+
+Responde SOLO con el versículo personalizado para ${userName}, sin explicaciones adicionales, sin comillas adicionales.`;
   }
 }

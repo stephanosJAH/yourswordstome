@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>YourWordsForMe - Personalized Verses</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;family=Montserrat:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // A nice blue
+                        'primary-dark': '#2563EB',
+                        'light-bg': '#F7F8FA',
+                        'light-text': '#111827',
+                        'light-subtle': '#6B7280',
+                    },
+                    fontFamily: {
+                        display: ["Montserrat", "sans-serif"],
+                        serif: ["Cormorant Garamond", "serif"],
+                    },
+                    borderRadius: {
+                        'large': '1.5rem',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'fade-in': 'fadeIn 1.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .ethereal-gradient {
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.1) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-light-bg text-light-text font-display antialiased">
+<div class="relative min-h-screen w-full overflow-hidden flex flex-col">
+<div class="absolute inset-0 bg-pattern"></div>
+<div class="absolute inset-0 ethereal-gradient"></div>
+<div class="relative z-10 flex flex-col flex-grow">
+<header class="w-full px-4 sm:px-8 py-6">
+<div class="container mx-auto flex justify-between items-center">
+<h1 class="text-xl font-bold tracking-tight">YourWordsForMe</h1>
+<div class="flex items-center gap-4">
+<span class="text-sm font-medium text-light-subtle hidden sm:block">Hello, Sarah!</span>
+<button class="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-5 rounded-full flex items-center gap-2 transition-all duration-300 shadow-sm hover:shadow-md">
+<span class="material-symbols-outlined text-base">account_circle</span>
+                        Account
+                    </button>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center text-center px-4 -mt-10">
+<div class="max-w-4xl w-full mx-auto animate-fade-in-up">
+<h2 class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-light-text">
+                    The Word,
+                    <span class="font-serif italic text-primary">Personalized.</span>
+</h2>
+<p class="max-w-xl mx-auto mt-6 text-lg text-light-subtle leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
+                    Experience the Bible in a new way. Enter a verse and let our AI craft a version that speaks directly to your heart.
+                </p>
+<div class="w-full max-w-2xl mt-12 mx-auto p-2 bg-white/50 backdrop-blur-md border border-gray-200/80 rounded-large shadow-lg animate-fade-in-up" style="animation-delay: 0.4s;">
+<div class="flex flex-col gap-4 p-4 sm:p-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-light-subtle">menu_book</span>
+<label class="sr-only" for="bible-verse">Bible Verse</label>
+<input class="w-full pl-12 pr-4 py-4 bg-gray-100/80 border-transparent rounded-xl text-light-text placeholder-light-subtle focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 text-lg" id="bible-verse" name="bible-verse" placeholder="Enter Bible verse (e.g., John 3:16)" type="text"/>
+</div>
+<button class="w-full bg-primary text-white font-bold py-4 px-6 rounded-xl hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-primary/40">
+<span class="material-symbols-outlined">auto_awesome</span>
+                            Personalize with AI
+                        </button>
+<div class="mt-4 p-5 border border-dashed border-gray-300 rounded-xl bg-white/50 text-left">
+<p class="font-serif text-xl italic text-light-text leading-relaxed">"For God so loved the world, <span class="font-bold text-primary">Sarah</span>, that he gave his one and only Son, that if you believe in him you shall not perish but have eternal life."</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="w-full p-6 text-center text-sm text-gray-400">
+<p>© 2024 YourWordsForMe. All rights reserved.</p>
+</footer>
+</div>
+</div>
+
+</body></html>

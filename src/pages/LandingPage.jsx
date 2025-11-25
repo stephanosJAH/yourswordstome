@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Sparkles, BookOpen, Share2, Download } from 'lucide-react';
 
@@ -27,32 +27,36 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-white">
-      {/* Header */}
-      <header className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <BookOpen className="text-accent" size={32} />
-            <span className="text-2xl font-bold text-primary">YourWordsForMe</span>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="background-gradient fixed inset-0 z-0"></div>
+      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="w-full px-4 sm:px-8 py-6">
+          <div className="container mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-3xl mx-auto animate-fadeIn">
-          <h1 className="text-5xl md:text-6xl font-bold text-primary mb-6">
-            Versículos Bíblicos
-            <span className="block text-accent mt-2">Personalizados para Ti</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
+      <section className="container mx-auto px-4 py-20 text-center -mt-10">
+        <div className="max-w-4xl mx-auto animate-fade-in-up">
+          <h2 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-light-text">
+            Versículos Bíblicos,
+            <span className="font-serif italic text-primary block">Personalizados.</span>
+          </h2>
+          <p className="max-w-xl mx-auto mt-6 text-lg text-light-subtle leading-relaxed animate-fade-in" style={{animationDelay: '0.2s'}}>
             Experimenta las Escrituras de una manera única y personal.
             Usa IA para crear versículos que hablan directamente a tu corazón.
           </p>
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="bg-accent hover:bg-accent/90 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto space-x-2"
+            className="mt-12 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto space-x-3 text-lg animate-fade-in-up"
+            style={{animationDelay: '0.4s'}}
           >
             {loading ? (
               <>
@@ -145,11 +149,23 @@ const LandingPage = () => {
         </button>
       </section>
 
-      {/* Footer */}
-      <footer className="container mx-auto px-4 py-8 text-center text-gray-500 border-t">
-        <p>&copy; 2025 YourWordsForMe. Todos los derechos reservados.</p>
-        <p className="text-sm mt-2">Versión Reina Valera 1960</p>
-      </footer>
+        {/* Footer */}
+        <footer className="container mx-auto px-4 py-8 text-center text-gray-500 border-t">
+          <div className="flex flex-wrap justify-center gap-6 mb-4">
+            <Link to="/about" className="hover:text-primary transition-colors">
+              Acerca de
+            </Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">
+              Privacidad
+            </Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">
+              Términos de Uso
+            </Link>
+          </div>
+          <p>&copy; 2024 YourWordsForMe. Todos los derechos reservados.</p>
+          <p className="text-sm mt-2">Versión Reina Valera 1960</p>
+        </footer>
+      </div>
     </div>
   );
 };
