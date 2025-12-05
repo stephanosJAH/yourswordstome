@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { validateReference } from '../services/bibleService';
 import { getVerseGeneratorService } from '../services/verseGeneratorService';
 import { hasUnlimitedAccess } from '../services/userService';
-import { BookOpen, LogOut, Sparkles, Info, Users, Download, Share2 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { useVersesHistory } from '../hooks/useVersesHistory';
+import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Star, Clock } from 'lucide-react';
 import CustomNameModal from '../components/CustomNameModal';
-import ClassicStyle from '../components/visual/ClassicStyle';
-import ModernStyle from '../components/visual/ModernStyle';
-import InspirationalStyle from '../components/visual/InspirationalStyle';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,10 +18,16 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customName, setCustomName] = useState(null);
-  const [verseData, setVerseData] = useState(null);
-  const [selectedStyle, setSelectedStyle] = useState('classic');
-  const [downloading, setDownloading] = useState(false);
-  const canvasRef = useRef(null);
+
+  // Hook para obtener versículos generados
+  const { 
+    verses, 
+    loading: versesLoading, 
+    toggleFavorite, 
+    removeVerse,
+    favoritesOnly,
+    setFavoritesOnly 
+  } = useVersesHistory(user?.uid);
 
   // Verificar si el usuario tiene acceso ilimitado
   const isUnlimited = userData && hasUnlimitedAccess(userData.email);
@@ -115,14 +118,14 @@ const Dashboard = () => {
         // Actualizar datos del usuario
         await refreshUserData();
         
-        // Guardar datos del versículo con View Transition y hacer scroll a la sección de resultado
-        withViewTransition(() => {
-          setVerseData(result.data);
+        // Navegar a la página de resultado con los datos y el verseId
+        navigate('/result', { 
+          state: { 
+            verseData: result.data,
+            verseId: result.data.verseId,
+            isFavorite: false // Nuevo versículo, no es favorito
+          } 
         });
-        
-        setTimeout(() => {
-          document.getElementById('result-section')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
       } else {
         setError(result.message);
       }
@@ -307,167 +310,168 @@ const Dashboard = () => {
 
         </div>
 
-        {/* section result */}
-        <div id="result-section" className="min-h-screen max-w-4xl w-full mx-auto flex items-center justify-center py-16">
-          {verseData ? (
-            <div className="w-full">
-              {/* Style Selector */}
-              <div className="mb-6 sm:mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6 text-center px-4">
-                  Selecciona un Estilo
-                </h2>
-                <div className="flex justify-center flex-wrap gap-2.5 sm:gap-4 px-4">
-                  {[
-                    { id: 'classic', name: 'Clásico', component: ClassicStyle },
-                    { id: 'modern', name: 'Moderno', component: ModernStyle },
-                    { id: 'inspirational', name: 'Inspiracional', component: InspirationalStyle }
-                  ].map((style) => (
-                    <button
-                      key={style.id}
-                      onClick={() => setSelectedStyle(style.id)}
-                      className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold transition-all text-sm sm:text-base ${
-                        selectedStyle === style.id
-                          ? 'bg-primary text-white shadow-lg scale-105'
-                          : 'bg-white/60 backdrop-blur-sm text-light-text hover:bg-white border border-gray-200/80'
-                      }`}
-                    >
-                      {style.name}
-                    </button>
-                  ))}
+        {/* section favorites */}
+        <div id="favorites-section" className="max-w-4xl w-full mx-auto py-16 px-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full mb-4 sm:mb-6">
+              <Heart size={32} className="sm:w-10 sm:h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3 sm:mb-4">
+              {favoritesOnly ? 'Mis Versículos Favoritos' : 'Mis Versículos Generados'}
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4">
+              {favoritesOnly 
+                ? 'Tus versículos guardados como favoritos' 
+                : 'Todos tus versículos personalizados'}
+            </p>
+            
+            {/* Toggle Favoritos / Todos */}
+            <div className="flex justify-center gap-2">
+              <button
+                onClick={() => setFavoritesOnly(false)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  !favoritesOnly 
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Clock size={16} />
+                  Todos
+                </span>
+              </button>
+              <button
+                onClick={() => setFavoritesOnly(true)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  favoritesOnly 
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <Star size={16} />
+                  Favoritos
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Loading State */}
+          {versesLoading && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-gray-500">Cargando versículos...</p>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!versesLoading && verses.length === 0 && (
+            <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-lg p-8 sm:p-12 border border-gray-200/80">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full mb-6">
+                  <BookOpen size={36} className="sm:w-10 sm:h-10 text-gray-400" />
                 </div>
-              </div>
-
-              {/* Preview */}
-              <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200/80">
-                <div className="flex justify-center overflow-x-auto">
-                  <div ref={canvasRef} className="inline-block">
-                    {selectedStyle === 'classic' && (
-                      <ClassicStyle
-                        personalizedText={verseData.personalizedText}
-                        reference={verseData.reference}
-                        userName={getFirstName(user?.displayName)}
-                      />
-                    )}
-                    {selectedStyle === 'modern' && (
-                      <ModernStyle
-                        personalizedText={verseData.personalizedText}
-                        reference={verseData.reference}
-                        userName={getFirstName(user?.displayName)}
-                      />
-                    )}
-                    {selectedStyle === 'inspirational' && (
-                      <InspirationalStyle
-                        personalizedText={verseData.personalizedText}
-                        reference={verseData.reference}
-                        userName={getFirstName(user?.displayName)}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <button
-                  onClick={async () => {
-                    setDownloading(true);
-                    try {
-                      const element = canvasRef.current;
-                      const canvas = await html2canvas(element, {
-                        scale: 2,
-                        useCORS: true,
-                        backgroundColor: null
-                      });
-                      canvas.toBlob((blob) => {
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        const fileName = `versiculo-${verseData.reference.replace(/\s+/g, '-')}-${Date.now()}.png`;
-                        link.download = fileName;
-                        link.href = url;
-                        link.click();
-                        URL.revokeObjectURL(url);
-                        setDownloading(false);
-                      });
-                    } catch (error) {
-                      console.error('Error al descargar:', error);
-                      alert('Error al generar la imagen. Por favor intenta de nuevo.');
-                      setDownloading(false);
-                    }
-                  }}
-                  disabled={downloading}
-                  className="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 sm:py-4 rounded-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-primary/40 text-sm sm:text-base"
-                >
-                  {downloading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      <span>Generando...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Download size={20} />
-                      <span>Descargar Imagen</span>
-                    </>
-                  )}
-                </button>
-                {navigator.share && (
-                  <button
-                    onClick={async () => {
-                      try {
-                        const element = canvasRef.current;
-                        const canvas = await html2canvas(element, {
-                          scale: 2,
-                          useCORS: true,
-                          backgroundColor: null
-                        });
-                        canvas.toBlob(async (blob) => {
-                          const file = new File([blob], 'versiculo.png', { type: 'image/png' });
-                          await navigator.share({
-                            files: [file],
-                            title: verseData.reference,
-                            text: verseData.personalizedText
-                          });
-                        });
-                      } catch (error) {
-                        console.error('Error al compartir:', error);
-                      }
-                    }}
-                    className="flex-1 bg-white/60 backdrop-blur-sm border-2 border-gray-300 text-light-text hover:bg-white font-semibold py-3 sm:py-4 rounded-xl transition-all flex items-center justify-center space-x-2 text-sm sm:text-base"
-                  >
-                    <Share2 size={18} className="sm:w-5 sm:h-5" />
-                    <span>Compartir</span>
-                  </button>
-                )}
-              </div>
-
-              {/* Original Text Reference */}
-              <div className="p-4 sm:p-6 bg-white/40 backdrop-blur-sm rounded-xl border border-gray-200/50">
-                <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2">
-                  Texto Original:
+                <h3 className="text-lg sm:text-xl font-semibold text-light-text mb-3">
+                  {favoritesOnly 
+                    ? 'Aún no tienes versículos favoritos' 
+                    : 'Aún no has generado versículos'}
                 </h3>
-                <p className="text-sm sm:text-base text-gray-600 italic mb-2">
-                  "{verseData.originalText}"
+                <p className="text-sm sm:text-base text-light-subtle mb-6 max-w-sm mx-auto">
+                  {favoritesOnly 
+                    ? 'Marca versículos como favoritos para verlos aquí' 
+                    : 'Genera tu primer versículo personalizado'}
                 </p>
-                <p className="text-xs sm:text-sm text-light-subtle">
-                  — {verseData.reference} ({verseData.translation})
-                </p>
-              </div>
-
-              {/* Botón para generar otro */}
-              <div className="text-center mt-6 sm:mt-8">
                 <button
                   onClick={() => {
                     document.getElementById('generate-section')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="bg-white/60 backdrop-blur-sm border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-2.5 sm:py-3 px-6 sm:px-8 rounded-xl transition-all text-sm sm:text-base"
+                  className="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all text-sm sm:text-base shadow-lg hover:shadow-primary/40"
                 >
-                  Generar Otro Versículo
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={18} />
+                    Generar versículo
+                  </span>
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="text-center text-light-subtle px-4">
-              <Sparkles size={40} className="sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-primary/30" />
-              <p className="text-base sm:text-lg">Genera un versículo para ver el resultado aquí</p>
+          )}
+
+          {/* Grid de versículos */}
+          {!versesLoading && verses.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {verses.map((verse) => (
+                <div 
+                  key={verse.id} 
+                  className="bg-white/70 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200/80 hover:shadow-lg transition-all"
+                >
+                  {/* Header con referencia y acciones */}
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                      {verse.verseReference}
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleFavorite(verse.id, verse.isFavorite)}
+                        className={`p-2 rounded-full transition-all ${
+                          verse.isFavorite 
+                            ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100' 
+                            : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
+                        }`}
+                        title={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                      >
+                        <Star size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm('¿Estás seguro de eliminar este versículo?')) {
+                            removeVerse(verse.id);
+                          }
+                        }}
+                        className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                        title="Eliminar versículo"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Texto personalizado */}
+                  <p className="text-sm text-gray-700 leading-relaxed mb-3 line-clamp-4">
+                    {verse.personalizedText || verse.originalText}
+                  </p>
+                  
+                  {/* Footer con fecha */}
+                  <div className="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-100">
+                    <span>
+                      {verse.createdAt instanceof Date 
+                        ? verse.createdAt.toLocaleDateString('es-ES', { 
+                            day: 'numeric', 
+                            month: 'short',
+                            year: 'numeric'
+                          })
+                        : 'Fecha no disponible'
+                      }
+                    </span>
+                    <button
+                      onClick={() => navigate('/result', { 
+                        state: { 
+                          verseData: {
+                            reference: verse.verseReference,
+                            originalText: verse.originalText,
+                            personalizedText: verse.personalizedText,
+                            translation: verse.translation
+                          },
+                          verseId: verse.id,
+                          isFavorite: verse.isFavorite
+                        } 
+                      })}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Ver más →
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -489,13 +493,31 @@ const Dashboard = () => {
                 <h4 className="text-sm sm:text-base font-semibold text-light-text mb-2 sm:mb-3">Enlaces</h4>
                 <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-light-subtle">
                   <li>
-                    <Link to="/about" className="hover:text-primary transition-colors">Acerca de</Link>
+                    <Link 
+                      to="/about" 
+                      className="hover:text-primary transition-colors"
+                      style={{ viewTransitionName: 'page-title-about' }}
+                    >
+                      Acerca de
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/privacy" className="hover:text-primary transition-colors">Privacidad</Link>
+                    <Link 
+                      to="/privacy" 
+                      className="hover:text-primary transition-colors"
+                      style={{ viewTransitionName: 'page-title-privacy' }}
+                    >
+                      Privacidad
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/terms" className="hover:text-primary transition-colors">Términos de uso</Link>
+                    <Link 
+                      to="/terms" 
+                      className="hover:text-primary transition-colors"
+                      style={{ viewTransitionName: 'page-title-terms' }}
+                    >
+                      Términos de uso
+                    </Link>
                   </li>
                 </ul>
               </div>

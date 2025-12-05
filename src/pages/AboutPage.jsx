@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, BookOpen, Sparkles } from 'lucide-react';
 
 const AboutPage = () => {
   const navigate = useNavigate();
+
+  // Scroll to top cuando se carga la página
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -30,7 +35,10 @@ const AboutPage = () => {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-12 max-w-4xl">
           <div className="glass-card p-8 md:p-12 animate-fade-in-up">
-            <h2 className="text-4xl md:text-5xl font-bold text-light-text mb-6">
+            <h2 
+              className="text-4xl md:text-5xl font-bold text-light-text mb-6"
+              style={{ viewTransitionName: 'page-title-about' }}
+            >
               Acerca de <span className="text-primary font-serif italic">YourWordsForMe</span>
             </h2>
 

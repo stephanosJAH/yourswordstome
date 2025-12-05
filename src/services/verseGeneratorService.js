@@ -1,109 +1,102 @@
-import { AIProviderFactory } from './ai';
-import { fetchVerse } from './bibleService';
-import { hasTokensAvailable, decrementTokens, saveToHistory } from './userService';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../config/firebase';
 
 /**
- * Servicio principal para generar versículos personalizados
+ * Servicio para generar versículos personalizados usando Cloud Functions
+ * 
+ * Toda la lógica crítica (verificación de tokens, generación con IA, 
+ * guardado en Firestore) se ejecuta en el servidor para mayor seguridad.
  */
-export class VerseGeneratorService {
-  constructor(providerName = 'openai', apiKey = null) {
-    this.providerName = providerName;
-    this.apiKey = apiKey || import.meta.env.VITE_OPENAI_API_KEY;
-    this.aiProvider = null;
-  }
 
-  /**
-   * Configurar proveedor de IA
-   */
-  setProvider(providerName, apiKey) {
-    this.providerName = providerName;
-    this.apiKey = apiKey;
-    this.aiProvider = null; // Reset para crear nuevo proveedor
-  }
+/**
+ * Generar versículo personalizado llamando a la Cloud Function
+ * @param {Object} params
+ * @param {string} params.userName - Nombre del usuario para personalización
+ * @param {string} params.verseReference - Referencia bíblica (ej: "Juan 3:16")
+ * @param {number} params.temperature - Temperatura de creatividad (0-1)
+ * @returns {Promise<Object>} - Resultado de la generación
+ */
+export const generatePersonalizedVerse = async ({ userName, verseReference, temperature = 0.5 }) => {
+  try {
+    // Llamar a la Cloud Function
+    const generateVerseFunction = httpsCallable(functions, 'generateVerse');
+    
+    const result = await generateVerseFunction({
+      userName,
+      verseReference,
+      temperature
+    });
 
-  /**
-   * Obtener instancia del proveedor de IA
-   */
-  getAIProvider() {
-    if (!this.aiProvider) {
-      this.aiProvider = AIProviderFactory.createProvider(this.providerName, this.apiKey);
-    }
-    return this.aiProvider;
-  }
+    // La Cloud Function retorna { success: true, data: {...} }
+    return result.data;
 
-  /**
-   * Generar versículo personalizado
-   * @param {Object} params
-   * @param {string} params.userId - ID del usuario
-   * @param {string} params.userName - Nombre del usuario
-   * @param {string} params.verseReference - Referencia bíblica
-   * @param {number} params.temperature - Temperatura de creatividad (0-1)
-   * @returns {Promise<Object>} - Resultado de la generación
-   */
-  async generatePersonalizedVerse({ userId, userName, verseReference, temperature = 0.5 }) {
-    try {
-      // 1. Verificar tokens disponibles
-      const hasTokens = await hasTokensAvailable(userId);
-      if (!hasTokens) {
-        throw new Error('insufficient_tokens');
-      }
+  } catch (error) {
+    console.error('Error al generar versículo:', error);
 
-      // 2. Obtener texto original del versículo
-      const verseData = await fetchVerse(verseReference);
-      
-      // 3. Generar versículo personalizado con IA
-      const aiProvider = this.getAIProvider();
-      const personalizedVerse = await aiProvider.generatePersonalizedVerse({
-        verseText: verseData.text,
-        verseReference: verseData.reference,
-        userName,
-        temperature
-      });
-
-      // 4. Decrementar tokens
-      await decrementTokens(userId);
-
-      // 5. Guardar en historial
-      await saveToHistory(userId, {
-        verseReference: verseData.reference,
-        originalText: verseData.text,
-        personalizedText: personalizedVerse,
-        temperature,
-        aiProvider: this.providerName
-      });
-
-      // 6. Retornar resultado
-      return {
-        success: true,
-        data: {
-          reference: verseData.reference,
-          originalText: verseData.text,
-          personalizedText: personalizedVerse,
-          translation: verseData.translation_name
-        }
-      };
-
-    } catch (error) {
-      console.error('Error al generar versículo:', error);
-      
-      if (error.message === 'insufficient_tokens') {
-        return {
-          success: false,
-          error: 'insufficient_tokens',
-          message: 'No tienes tokens disponibles'
-        };
-      }
-
+    // Manejar errores específicos de Cloud Functions
+    if (error.code === 'functions/unauthenticated') {
       return {
         success: false,
-        error: 'generation_failed',
-        message: error.message || 'Error al generar versículo personalizado'
+        error: 'unauthenticated',
+        message: 'Debes iniciar sesión para generar versículos'
       };
     }
+
+    if (error.code === 'functions/resource-exhausted') {
+      return {
+        success: false,
+        error: 'insufficient_tokens',
+        message: 'No tienes tokens disponibles'
+      };
+    }
+
+    if (error.code === 'functions/invalid-argument') {
+      return {
+        success: false,
+        error: 'invalid_argument',
+        message: error.message || 'Parámetros inválidos'
+      };
+    }
+
+    return {
+      success: false,
+      error: 'generation_failed',
+      message: error.message || 'Error al generar versículo personalizado'
+    };
+  }
+};
+
+/**
+ * Obtener tokens restantes del usuario
+ * @returns {Promise<Object>} - { tokens, totalGenerated, isUnlimited }
+ */
+export const getTokensRemaining = async () => {
+  try {
+    const getTokensFunction = httpsCallable(functions, 'getTokensRemaining');
+    const result = await getTokensFunction();
+    return result.data;
+  } catch (error) {
+    console.error('Error al obtener tokens:', error);
+    return { tokens: 0, totalGenerated: 0, isUnlimited: false };
+  }
+};
+
+/**
+ * Clase legacy para compatibilidad con código existente
+ * @deprecated Usar las funciones exportadas directamente
+ */
+export class VerseGeneratorService {
+  constructor() {
+    console.warn('VerseGeneratorService class is deprecated. Use generatePersonalizedVerse() function directly.');
+  }
+
+  async generatePersonalizedVerse({ userId, userName, verseReference, temperature = 0.5 }) {
+    // userId ya no es necesario, la Cloud Function lo obtiene del token de auth
+    return generatePersonalizedVerse({ userName, verseReference, temperature });
   }
 }
 
-// Instancia singleton por defecto
+// Instancia singleton por defecto (legacy)
 let defaultService = null;
 
 export const getVerseGeneratorService = () => {

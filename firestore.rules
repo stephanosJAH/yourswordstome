@@ -1,47 +1,91 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Función helper para verificar autenticación
+    // ============================================================================
+    // FUNCIONES HELPER
+    // ============================================================================
+    
+    // Verifica que el usuario esté autenticado con Firebase Auth
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // Función helper para verificar que el usuario es el propietario
+    // Verifica que el usuario autenticado sea el propietario del documento
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Users collection
+    // Obtiene las claves afectadas en una actualización
+    function getAffectedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+    
+    // ============================================================================
+    // COLECCIÓN: users/{userId}
+    // ============================================================================
     match /users/{userId} {
-      // Permitir lectura solo al propietario
+      
+      // LECTURA: Solo el propietario puede leer sus datos
       allow read: if isOwner(userId);
       
-      // Permitir crear solo al propietario (primer login)
-      allow create: if isOwner(userId);
+      // CREACIÓN: Solo el propietario, con campos iniciales obligatorios
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasAll([
+                      'displayName', 'email', 'tokens', 'totalGenerated'
+                    ])
+                    && request.resource.data.tokens == 5
+                    && request.resource.data.totalGenerated == 0;
       
-      // Permitir actualizar solo al propietario
-      // Permitir modificación de tokens y totalGenerated para el sistema
-      allow update: if isOwner(userId);
+      // ACTUALIZACIÓN: Solo el propietario, SIN modificar campos críticos
+      // Los campos tokens, totalGenerated y lastGeneratedAt SOLO pueden ser
+      // modificados por Cloud Functions (que usan Admin SDK y bypasean estas reglas)
+      allow update: if isOwner(userId)
+                    && !getAffectedKeys().hasAny([
+                      'tokens', 
+                      'totalGenerated',
+                      'lastGeneratedAt',
+                      'email'  // El email tampoco debe cambiar
+                    ]);
       
-      // No permitir eliminación
+      // ELIMINACIÓN: Prohibida
       allow delete: if false;
       
-      // History subcollection
-      match /history/{historyId} {
-        // Solo lectura para el propietario
+      // ==========================================================================
+      // SUBCOLECCIÓN: generated_verses/{verseId}
+      // ==========================================================================
+      match /generated_verses/{verseId} {
+        
+        // LECTURA: Solo el propietario
         allow read: if isOwner(userId);
         
-        // Permitir creación al propietario
-        allow create: if isOwner(userId);
+        // CREACIÓN: Prohibida desde el cliente
+        // Solo Cloud Functions pueden crear versículos (usando Admin SDK)
+        // Esto previene que usuarios maliciosos creen versículos sin gastar tokens
+        allow create: if false;
         
-        // No permitir modificación o eliminación
-        allow update, delete: if false;
+        // ACTUALIZACIÓN: Solo el propietario, SOLO el campo isFavorite
+        // Esto permite al cliente marcar/desmarcar favoritos sin modificar
+        // el contenido del versículo
+        allow update: if isOwner(userId)
+                      && getAffectedKeys().hasOnly(['isFavorite']);
+        
+        // ELIMINACIÓN: Solo el propietario puede eliminar sus versículos
+        allow delete: if isOwner(userId);
+      }
+      
+      // ==========================================================================
+      // SUBCOLECCIÓN: history/{historyId} (Legacy - solo lectura)
+      // ==========================================================================
+      match /history/{historyId} {
+        allow read: if isOwner(userId);
+        allow create, update, delete: if false;
       }
     }
     
-    // Denegar acceso a cualquier otra colección
+    // ============================================================================
+    // REGLA POR DEFECTO: Denegar todo lo demás
+    // ============================================================================
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 
 const TermsPage = () => {
   const navigate = useNavigate();
+
+  // Scroll to top cuando se carga la página
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -32,7 +37,10 @@ const TermsPage = () => {
           <div className="glass-card p-8 md:p-12 animate-fade-in-up">
             <div className="flex items-center gap-3 mb-6">
               <FileText className="w-10 h-10 text-primary" />
-              <h2 className="text-4xl md:text-5xl font-bold text-light-text">
+              <h2 
+                className="text-4xl md:text-5xl font-bold text-light-text"
+                style={{ viewTransitionName: 'page-title-terms' }}
+              >
                 Términos de Uso
               </h2>
             </div>
