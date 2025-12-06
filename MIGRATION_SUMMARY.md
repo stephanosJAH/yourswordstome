@@ -2,7 +2,7 @@
 
 ## 🎯 Resumen Ejecutivo
 
-Tu aplicación **YourWordsForMe** ahora usa la **API oficial de Bible** (scripture.api.bible) con soporte completo para español.
+Tu aplicación **YourWordsToMe** ahora usa la **API oficial de Bible** (scripture.api.bible) con soporte completo para español.
 
 ---
 

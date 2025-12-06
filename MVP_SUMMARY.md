@@ -1,4 +1,4 @@
-# YourWordsForMe - MVP Generado
+# YourWordsToMe - MVP Generado
 
 ## 🎉 ¡MVP Completado!
 

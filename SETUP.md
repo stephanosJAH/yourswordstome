@@ -1,4 +1,4 @@
-# YourWordsForMe - Guía de Configuración
+# YourWordsToMe - Guía de Configuración
 
 ## Configuración Inicial
 

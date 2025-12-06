@@ -28,7 +28,7 @@ const TermsPage = () => {
               <ArrowLeft className="w-5 h-5" />
               <span>Volver</span>
             </button>
-            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
           </div>
         </header>
 
@@ -53,7 +53,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">1. Aceptación de los Términos</h3>
                 <p>
-                  Al acceder y utilizar YourWordsForMe, aceptas estar sujeto a estos Términos de Uso. 
+                  Al acceder y utilizar YourWordsToMe, aceptas estar sujeto a estos Términos de Uso. 
                   Si no estás de acuerdo con alguna parte de estos términos, no debes utilizar nuestra aplicación.
                 </p>
               </section>
@@ -61,7 +61,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">2. Descripción del Servicio</h3>
                 <p className="mb-3">
-                  YourWordsForMe es una aplicación que utiliza inteligencia artificial para:
+                  YourWordsToMe es una aplicación que utiliza inteligencia artificial para:
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-3">
@@ -82,7 +82,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">3. Requisitos de Cuenta</h3>
                 <div className="space-y-3">
-                  <p>Para utilizar YourWordsForMe, debes:</p>
+                  <p>Para utilizar YourWordsToMe, debes:</p>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-3">
                       <span className="text-primary mt-1">•</span>
@@ -160,7 +160,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">6. Propiedad Intelectual</h3>
                 <p className="mb-3">
-                  Todo el contenido, diseños, logos y marcas en YourWordsForMe son propiedad de la aplicación 
+                  Todo el contenido, diseños, logos y marcas en YourWordsToMe son propiedad de la aplicación 
                   y están protegidos por leyes de propiedad intelectual.
                 </p>
                 <p>
@@ -181,7 +181,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">8. Limitación de Responsabilidad</h3>
                 <p className="mb-3">
-                  YourWordsForMe se proporciona "tal cual" sin garantías de ningún tipo. No nos hacemos 
+                  YourWordsToMe se proporciona "tal cual" sin garantías de ningún tipo. No nos hacemos 
                   responsables de:
                 </p>
                 <ul className="space-y-2">
@@ -215,7 +215,7 @@ const TermsPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">10. Terminación</h3>
                 <p className="mb-3">
-                  Podemos suspender o terminar tu acceso a YourWordsForMe si:
+                  Podemos suspender o terminar tu acceso a YourWordsToMe si:
                 </p>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-3">
@@ -258,7 +258,7 @@ const TermsPage = () => {
 
               <section className="pt-6 border-t border-primary/20 bg-primary/5 p-6 rounded-lg">
                 <p className="text-center text-light-text">
-                  Al usar YourWordsForMe, aceptas estos términos y te comprometes a utilizarla de manera 
+                  Al usar YourWordsToMe, aceptas estos términos y te comprometes a utilizarla de manera 
                   responsable y respetuosa, en el espíritu de compartir la Palabra de Dios con amor y sabiduría.
                 </p>
               </section>
@@ -268,7 +268,7 @@ const TermsPage = () => {
 
         {/* Footer */}
         <footer className="container mx-auto px-4 py-8 text-center text-light-text/60">
-          <p>&copy; 2024 YourWordsForMe. Todos los derechos reservados.</p>
+          <p>&copy; 2024 YourWordsToMe. Todos los derechos reservados.</p>
         </footer>
       </div>
     </div>

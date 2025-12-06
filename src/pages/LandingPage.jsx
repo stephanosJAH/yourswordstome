@@ -37,7 +37,7 @@ const LandingPage = () => {
         {/* Header */}
         <header className="w-full px-4 sm:px-8 py-6">
           <div className="container mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
           </div>
         </header>
 
@@ -162,7 +162,7 @@ const LandingPage = () => {
               Términos de Uso
             </Link>
           </div>
-          <p>&copy; 2024 YourWordsForMe. Todos los derechos reservados.</p>
+          <p>&copy; 2024 YourWordsToMe. Todos los derechos reservados.</p>
           <p className="text-sm mt-2">Versión Reina Valera 1960</p>
         </footer>
       </div>

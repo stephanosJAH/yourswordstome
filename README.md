@@ -1,4 +1,4 @@
-# YourWordsForMe - Versículos Bíblicos Personalizados
+# YourWordsToMe - Versículos Bíblicos Personalizados
 
 Aplicación web que permite generar versículos bíblicos personalizados usando IA.
 

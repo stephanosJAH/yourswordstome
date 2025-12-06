@@ -1,8 +1,8 @@
-# 📖 YourWordsForMe - Documentación Completa
+# 📖 YourWordsToMe - Documentación Completa
 
-## 🎯 ¿Qué es YourWordsForMe?
+## 🎯 ¿Qué es YourWordsToMe?
 
-**YourWordsForMe** es una aplicación web innovadora que utiliza Inteligencia Artificial para crear versículos bíblicos personalizados. La aplicación toma cualquier versículo de la Biblia y lo adapta de manera natural y respetuosa incorporando el nombre del usuario, creando una experiencia espiritual única y personal.
+**YourWordsToMe** es una aplicación web innovadora que utiliza Inteligencia Artificial para crear versículos bíblicos personalizados. La aplicación toma cualquier versículo de la Biblia y lo adapta de manera natural y respetuosa incorporando el nombre del usuario, creando una experiencia espiritual única y personal.
 
 ### Ejemplo de Transformación
 
@@ -648,7 +648,7 @@ Explorar cómo las Escrituras hablan directamente al usuario
 
 ## 💡 Filosofía del Proyecto
 
-**YourWordsForMe** fue creada con la visión de hacer las Escrituras más accesibles y personales. La tecnología de IA no reemplaza ni modifica el mensaje divino, sino que actúa como un puente para ayudar a las personas a sentir que las Palabras de Dios hablan directamente a ellas.
+**YourWordsToMe** fue creada con la visión de hacer las Escrituras más accesibles y personales. La tecnología de IA no reemplaza ni modifica el mensaje divino, sino que actúa como un puente para ayudar a las personas a sentir que las Palabras de Dios hablan directamente a ellas.
 
 ### **Principios**
 1. **Respeto Teológico**: Mantener la integridad del mensaje bíblico

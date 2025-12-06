@@ -28,7 +28,7 @@ const PrivacyPage = () => {
               <ArrowLeft className="w-5 h-5" />
               <span>Volver</span>
             </button>
-            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
           </div>
         </header>
 
@@ -53,7 +53,7 @@ const PrivacyPage = () => {
               <section>
                 <h3 className="text-2xl font-semibold text-light-text mb-4">Introducción</h3>
                 <p>
-                  En YourWordsForMe, nos tomamos muy en serio tu privacidad. Esta política describe cómo 
+                  En YourWordsToMe, nos tomamos muy en serio tu privacidad. Esta política describe cómo 
                   recopilamos, usamos y protegemos tu información personal cuando utilizas nuestra aplicación.
                 </p>
               </section>
@@ -96,7 +96,7 @@ const PrivacyPage = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
-                    <span>Proporcionar y personalizar los servicios de YourWordsForMe.</span>
+                    <span>Proporcionar y personalizar los servicios de YourWordsToMe.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
@@ -228,7 +228,7 @@ const PrivacyPage = () => {
 
         {/* Footer */}
         <footer className="container mx-auto px-4 py-8 text-center text-light-text/60">
-          <p>&copy; 2024 YourWordsForMe. Todos los derechos reservados.</p>
+          <p>&copy; 2024 YourWordsToMe. Todos los derechos reservados.</p>
         </footer>
       </div>
     </div>

@@ -28,7 +28,7 @@ const AboutPage = () => {
               <ArrowLeft className="w-5 h-5" />
               <span>Volver</span>
             </button>
-            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
           </div>
         </header>
 
@@ -39,7 +39,7 @@ const AboutPage = () => {
               className="text-4xl md:text-5xl font-bold text-light-text mb-6"
               style={{ viewTransitionName: 'page-title-about' }}
             >
-              Acerca de <span className="text-primary font-serif italic">YourWordsForMe</span>
+              Acerca de <span className="text-primary font-serif italic">YourWordsToMe</span>
             </h2>
 
             <div className="space-y-8 text-light-text/80 text-lg leading-relaxed">
@@ -49,7 +49,7 @@ const AboutPage = () => {
                   <h3 className="text-2xl font-semibold text-light-text">Nuestra Misión</h3>
                 </div>
                 <p>
-                  YourWordsForMe nace del deseo de conectar a las personas con la Palabra de Dios de una manera 
+                  YourWordsToMe nace del deseo de conectar a las personas con la Palabra de Dios de una manera 
                   personal y significativa. Creemos que cada momento de nuestra vida tiene un versículo que puede 
                   iluminarlo, consolarlo o inspirarlo.
                 </p>
@@ -115,7 +115,7 @@ const AboutPage = () => {
 
         {/* Footer */}
         <footer className="container mx-auto px-4 py-8 text-center text-light-text/60">
-          <p>&copy; 2024 YourWordsForMe. Hecho con ❤️ para la gloria de Dios.</p>
+          <p>&copy; 2024 YourWordsToMe. Hecho con ❤️ para la gloria de Dios.</p>
         </footer>
       </div>
     </div>

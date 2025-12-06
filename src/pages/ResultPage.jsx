@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { hasUnlimitedAccess } from '../services/userService';
@@ -17,6 +17,67 @@ const DUMP_VERSE_DATA = {
   translation: "RVR1960"
 };
 
+// Definición de paletas de colores por estilo
+const styleThemes = {
+  classic: {
+    id: 'classic',
+    name: 'Clásico',
+    // Amarillos/Dorados - estilo clásico elegante
+    gradientFrom: 'from-amber-50',
+    gradientVia: 'via-yellow-100',
+    gradientTo: 'to-amber-200',
+    bgGradient: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%)',
+    primary: '#d97706', // amber-600
+    primaryLight: '#fbbf24', // amber-400
+    primaryDark: '#b45309', // amber-700
+    accent: '#92400e', // amber-800
+    textPrimary: '#78350f', // amber-900
+    textSecondary: '#a16207', // yellow-700
+    cardBg: 'rgba(255, 251, 235, 0.7)', // amber-50 con transparencia
+    cardBorder: 'rgba(217, 119, 6, 0.3)', // amber-600 con transparencia
+    buttonBg: '#d97706',
+    buttonHover: '#b45309',
+  },
+  modern: {
+    id: 'modern',
+    name: 'Moderno',
+    // Marrones/Tierra - estilo moderno con imagen de montaña
+    gradientFrom: 'from-stone-100',
+    gradientVia: 'via-amber-100',
+    gradientTo: 'to-stone-200',
+    bgGradient: 'linear-gradient(135deg, #f5f5f4 0%, #d6d3d1 50%, #a8a29e 100%)',
+    primary: '#78716c', // stone-500
+    primaryLight: '#a8a29e', // stone-400
+    primaryDark: '#57534e', // stone-600
+    accent: '#44403c', // stone-700
+    textPrimary: '#1c1917', // stone-900
+    textSecondary: '#57534e', // stone-600
+    cardBg: 'rgba(245, 245, 244, 0.7)', // stone-100 con transparencia
+    cardBorder: 'rgba(120, 113, 108, 0.3)', // stone-500 con transparencia
+    buttonBg: '#57534e',
+    buttonHover: '#44403c',
+  },
+  inspirational: {
+    id: 'inspirational',
+    name: 'Inspiracional',
+    // Azules/Púrpuras/Rosas - estilo vibrante
+    gradientFrom: 'from-blue-100',
+    gradientVia: 'via-purple-100',
+    gradientTo: 'to-pink-100',
+    bgGradient: 'linear-gradient(135deg, #dbeafe 0%, #e9d5ff 50%, #fce7f3 100%)',
+    primary: '#8b5cf6', // violet-500
+    primaryLight: '#a78bfa', // violet-400
+    primaryDark: '#7c3aed', // violet-600
+    accent: '#6d28d9', // violet-700
+    textPrimary: '#4c1d95', // violet-900
+    textSecondary: '#7c3aed', // violet-600
+    cardBg: 'rgba(237, 233, 254, 0.7)', // violet-100 con transparencia
+    cardBorder: 'rgba(139, 92, 246, 0.3)', // violet-500 con transparencia
+    buttonBg: '#8b5cf6',
+    buttonHover: '#7c3aed',
+  }
+};
+
 const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,6 +85,8 @@ const ResultPage = () => {
   const canvasRef = useRef(null);
 
   const [selectedStyle, setSelectedStyle] = useState('classic');
+  const [previousStyle, setPreviousStyle] = useState('classic');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -35,6 +98,24 @@ const ResultPage = () => {
   
   // Verificar si el usuario tiene acceso ilimitado
   const isUnlimited = userData && hasUnlimitedAccess(userData.email);
+
+  // Obtener tema actual y anterior
+  const currentTheme = styleThemes[selectedStyle];
+  const prevTheme = styleThemes[previousStyle];
+
+  // Manejar cambio de estilo con animación
+  const handleStyleChange = (newStyleId) => {
+    if (newStyleId === selectedStyle || isTransitioning) return;
+    
+    setPreviousStyle(selectedStyle);
+    setIsTransitioning(true);
+    setSelectedStyle(newStyleId);
+    
+    // Duración de la animación
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 1200);
+  };
 
   // Inicializar estado de favorito desde location.state
   useEffect(() => {
@@ -92,6 +173,18 @@ const ResultPage = () => {
   ];
 
   const SelectedStyleComponent = styles.find(s => s.id === selectedStyle)?.component;
+
+  // CSS para la animación sunrise (curva desde esquina inferior derecha)
+  const sunriseAnimation = `
+    @keyframes sunriseReveal {
+      0% {
+        clip-path: ellipse(0% 0% at 100% 100%);
+      }
+      100% {
+        clip-path: ellipse(200% 200% at 100% 100%);
+      }
+    }
+  `;
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -161,9 +254,66 @@ const ResultPage = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="background-gradient fixed inset-0 z-0"></div>
-      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      {/* Inyectar CSS de animación */}
+      <style>{sunriseAnimation}</style>
+      
+      {/* Capa de fondo anterior (visible durante la transición) */}
+      <div 
+        className="fixed inset-0 z-0 transition-opacity duration-300"
+        style={{ 
+          background: prevTheme.bgGradient,
+          opacity: isTransitioning ? 1 : 0,
+          pointerEvents: 'none'
+        }}
+      />
+      
+      {/* Capa de fondo actual con animación sunrise */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{ 
+          background: currentTheme.bgGradient,
+          animation: isTransitioning ? 'sunriseReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'none',
+          clipPath: isTransitioning ? 'ellipse(0% 0% at 100% 100%)' : 'ellipse(200% 200% at 100% 100%)'
+        }}
+      />
+      
+      {/* Efecto de brillo tipo "sol naciente" durante la transición */}
+      {isTransitioning && (
+        <div 
+          className="fixed z-0 pointer-events-none"
+          style={{
+            bottom: '-50%',
+            right: '-50%',
+            width: '100%',
+            height: '100%',
+            background: `radial-gradient(ellipse at center, ${currentTheme.primaryLight}40 0%, transparent 70%)`,
+            animation: 'sunriseReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+            filter: 'blur(40px)',
+          }}
+        />
+      )}
+      
+      {/* Partículas decorativas que se mueven con el tema */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute w-96 h-96 rounded-full opacity-20 transition-all duration-1000 ease-out"
+          style={{
+            background: `radial-gradient(circle, ${currentTheme.primaryLight} 0%, transparent 70%)`,
+            top: '-10%',
+            left: '-10%',
+            transform: isTransitioning ? 'scale(0.5)' : 'scale(1)',
+          }}
+        />
+        <div 
+          className="absolute w-80 h-80 rounded-full opacity-15 transition-all duration-1000 ease-out delay-100"
+          style={{
+            background: `radial-gradient(circle, ${currentTheme.primary} 0%, transparent 70%)`,
+            bottom: '10%',
+            right: '-5%',
+            transform: isTransitioning ? 'scale(0.5)' : 'scale(1)',
+          }}
+        />
+      </div>
       
       {/* Content */}
       <div className="relative z-10">
@@ -173,25 +323,55 @@ const ResultPage = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 text-light-text hover:text-primary transition-colors mr-4"
+                className="flex items-center gap-2 transition-colors mr-4"
+                style={{ color: currentTheme.textPrimary }}
               >
                 <ArrowLeft size={20} />
                 <span className="hidden sm:inline">Volver</span>
               </button>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+              <h1 
+                className="text-lg sm:text-xl font-bold tracking-tight transition-colors duration-500"
+                style={{ color: currentTheme.textPrimary }}
+              >
+                YourWordsToMe
+              </h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
-              <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">Hola, {getFirstName(user?.displayName)}!</span>
-              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-primary/10 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
-                <Sparkles className="text-primary" size={16} />
-                <span className="font-semibold text-primary text-xs sm:text-base">
+              <span 
+                className="text-xs sm:text-sm font-medium hidden sm:inline transition-colors duration-500"
+                style={{ color: currentTheme.textSecondary }}
+              >
+                Hola, {getFirstName(user?.displayName)}!
+              </span>
+              <div 
+                className="flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-500"
+                style={{ 
+                  backgroundColor: `${currentTheme.primary}20`,
+                }}
+              >
+                <Sparkles style={{ color: currentTheme.primary }} size={16} />
+                <span 
+                  className="font-semibold text-xs sm:text-base transition-colors duration-500"
+                  style={{ color: currentTheme.primary }}
+                >
                   {isUnlimited ? '∞' : (userData?.tokens || 0)}
                 </span>
-                <span className="text-xs sm:text-sm text-primary hidden sm:inline">tokens</span>
+                <span 
+                  className="text-xs sm:text-sm hidden sm:inline transition-colors duration-500"
+                  style={{ color: currentTheme.primary }}
+                >
+                  tokens
+                </span>
               </div>
               <button
                 onClick={handleLogout}
-                className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="backdrop-blur-sm font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
+                style={{
+                  backgroundColor: currentTheme.cardBg,
+                  borderColor: currentTheme.cardBorder,
+                  borderWidth: '1px',
+                  color: currentTheme.textPrimary
+                }}
                 title="Cerrar sesión"
               >
                 <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -206,19 +386,33 @@ const ResultPage = () => {
           <div className="max-w-4xl mx-auto">
             {/* Style Selector */}
             <div className="mb-6 sm:mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6 text-center">
+              <h2 
+                className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-center transition-colors duration-500"
+                style={{ color: currentTheme.primary }}
+              >
                 Selecciona un Estilo
               </h2>
               <div className="flex justify-center flex-wrap gap-2.5 sm:gap-4">
                 {styles.map((style) => (
                   <button
                     key={style.id}
-                    onClick={() => setSelectedStyle(style.id)}
-                    className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold transition-all text-sm sm:text-base ${
+                    onClick={() => handleStyleChange(style.id)}
+                    disabled={isTransitioning}
+                    className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-semibold transition-all text-sm sm:text-base disabled:cursor-not-allowed ${
                       selectedStyle === style.id
-                        ? 'bg-primary text-white shadow-lg scale-105'
-                        : 'bg-white/60 backdrop-blur-sm text-light-text hover:bg-white border border-gray-200/80'
+                        ? 'text-white shadow-lg scale-105'
+                        : 'backdrop-blur-sm hover:scale-102'
                     }`}
+                    style={{
+                      backgroundColor: selectedStyle === style.id 
+                        ? currentTheme.buttonBg 
+                        : currentTheme.cardBg,
+                      color: selectedStyle === style.id 
+                        ? 'white' 
+                        : currentTheme.textPrimary,
+                      borderWidth: selectedStyle === style.id ? '0' : '1px',
+                      borderColor: currentTheme.cardBorder,
+                    }}
                   >
                     {style.name}
                   </button>
@@ -227,7 +421,14 @@ const ResultPage = () => {
             </div>
 
             {/* Preview */}
-            <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-8 mb-6 sm:mb-8 border border-gray-200/80">
+            <div 
+              className="backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-8 mb-6 sm:mb-8 transition-all duration-500"
+              style={{
+                backgroundColor: currentTheme.cardBg,
+                borderWidth: '1px',
+                borderColor: currentTheme.cardBorder,
+              }}
+            >
               <div className="flex justify-center overflow-x-auto">
                 <div ref={canvasRef} className="inline-block">
                   {SelectedStyleComponent && (
@@ -251,8 +452,11 @@ const ResultPage = () => {
                   className={`flex-1 sm:flex-none font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base ${
                     isFavorite
                       ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-red-500/40'
-                      : 'bg-white/60 backdrop-blur-sm border-2 border-red-300 text-red-500 hover:bg-red-50'
+                      : 'backdrop-blur-sm border-2 border-red-300 text-red-500 hover:bg-red-50'
                   }`}
+                  style={{
+                    backgroundColor: isFavorite ? undefined : currentTheme.cardBg,
+                  }}
                   title={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
                 >
                   <Heart size={20} className={isFavorite ? 'fill-current' : ''} />
@@ -263,7 +467,12 @@ const ResultPage = () => {
               <button
                 onClick={handleDownload}
                 disabled={downloading}
-                className="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 sm:py-4 rounded-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-primary/40 text-sm sm:text-base"
+                className="flex-1 text-white font-semibold py-3 sm:py-4 rounded-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-sm sm:text-base"
+                style={{
+                  backgroundColor: currentTheme.buttonBg,
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = currentTheme.buttonHover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currentTheme.buttonBg}
               >
                 {downloading ? (
                   <>
@@ -282,7 +491,12 @@ const ResultPage = () => {
               {navigator.share && (
                 <button
                   onClick={handleShare}
-                  className="flex-1 sm:hidden bg-white/60 backdrop-blur-sm border-2 border-gray-300 text-light-text hover:bg-white font-semibold py-3 rounded-xl transition-all flex items-center justify-center space-x-2 text-sm"
+                  className="flex-1 sm:hidden backdrop-blur-sm border-2 font-semibold py-3 rounded-xl transition-all flex items-center justify-center space-x-2 text-sm"
+                  style={{
+                    backgroundColor: currentTheme.cardBg,
+                    borderColor: currentTheme.cardBorder,
+                    color: currentTheme.textPrimary,
+                  }}
                 >
                   <Share2 size={18} />
                   <span>Compartir</span>
@@ -292,7 +506,12 @@ const ResultPage = () => {
               {/* Botón Copiar Texto - Solo visible en desktop */}
               <button
                 onClick={handleCopyText}
-                className="flex-1 hidden sm:flex bg-white/60 backdrop-blur-sm border-2 border-gray-300 text-light-text hover:bg-white font-semibold py-4 rounded-xl transition-all items-center justify-center space-x-2 text-base"
+                className="flex-1 hidden sm:flex backdrop-blur-sm border-2 font-semibold py-4 rounded-xl transition-all items-center justify-center space-x-2 text-base"
+                style={{
+                  backgroundColor: currentTheme.cardBg,
+                  borderColor: currentTheme.cardBorder,
+                  color: currentTheme.textPrimary,
+                }}
               >
                 {copied ? (
                   <>
@@ -309,14 +528,30 @@ const ResultPage = () => {
             </div>
 
             {/* Original Text Reference */}
-            <div className="p-4 sm:p-6 bg-white/40 backdrop-blur-sm rounded-xl border border-gray-200/50">
-              <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2">
+            <div 
+              className="p-4 sm:p-6 backdrop-blur-sm rounded-xl transition-all duration-500"
+              style={{
+                backgroundColor: currentTheme.cardBg,
+                borderWidth: '1px',
+                borderColor: currentTheme.cardBorder,
+              }}
+            >
+              <h3 
+                className="text-xs sm:text-sm font-semibold mb-2 transition-colors duration-500"
+                style={{ color: currentTheme.textPrimary }}
+              >
                 Texto Original:
               </h3>
-              <p className="text-sm sm:text-base text-gray-600 italic mb-2">
+              <p 
+                className="text-sm sm:text-base italic mb-2 transition-colors duration-500"
+                style={{ color: currentTheme.textSecondary }}
+              >
                 "{verseData.originalText}"
               </p>
-              <p className="text-xs sm:text-sm text-light-subtle">
+              <p 
+                className="text-xs sm:text-sm transition-colors duration-500"
+                style={{ color: currentTheme.textSecondary }}
+              >
                 — {verseData.reference} ({verseData.translation})
               </p>
             </div>
@@ -325,7 +560,20 @@ const ResultPage = () => {
             <div className="text-center mt-6 sm:mt-8">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="bg-white/60 backdrop-blur-sm border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-2.5 sm:py-3 px-6 sm:px-8 rounded-xl transition-all text-sm sm:text-base"
+                className="backdrop-blur-sm border-2 font-semibold py-2.5 sm:py-3 px-6 sm:px-8 rounded-xl transition-all text-sm sm:text-base hover:text-white"
+                style={{
+                  backgroundColor: 'transparent',
+                  borderColor: currentTheme.primary,
+                  color: currentTheme.primary,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = currentTheme.buttonBg;
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = currentTheme.primary;
+                }}
               >
                 Generar Otro Versículo
               </button>

@@ -50,7 +50,7 @@ function AppRoutes() {
               <ResultPage />
             </ProtectedRoute>
           }
-        />
+        />ñ
       </Routes>
     </Router>
   );

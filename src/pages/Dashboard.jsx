@@ -5,7 +5,7 @@ import { validateReference } from '../services/bibleService';
 import { getVerseGeneratorService } from '../services/verseGeneratorService';
 import { hasUnlimitedAccess } from '../services/userService';
 import { useVersesHistory } from '../hooks/useVersesHistory';
-import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Star, Clock } from 'lucide-react';
+import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Clock } from 'lucide-react';
 import CustomNameModal from '../components/CustomNameModal';
 
 const Dashboard = () => {
@@ -149,7 +149,7 @@ const Dashboard = () => {
         <header className="w-full px-4 sm:px-8 py-4 sm:py-6">
           <div className="container mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-0">
             <div className="flex items-center space-x-2">
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsForMe</h1>
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">Hola, {getFirstName(user?.displayName)}!</span>
@@ -349,7 +349,7 @@ const Dashboard = () => {
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <Star size={16} />
+                  <Heart size={16} />
                   Favoritos
                 </span>
               </button>
@@ -414,12 +414,12 @@ const Dashboard = () => {
                         onClick={() => toggleFavorite(verse.id, verse.isFavorite)}
                         className={`p-2 rounded-full transition-all ${
                           verse.isFavorite 
-                            ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100' 
-                            : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
+                            ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                            : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                         }`}
                         title={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
                       >
-                        <Star size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} />
+                        <Heart size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} />
                       </button>
                       <button
                         onClick={() => {
@@ -482,7 +482,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
               {/* Columna 1 - Sobre el proyecto */}
               <div className="text-center md:text-left">
-                <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">YourWordsForMe</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-primary mb-2 sm:mb-3">YourWordsToMe</h3>
                 <p className="text-xs sm:text-sm text-light-subtle leading-relaxed px-4 md:px-0">
                   Personaliza versículos bíblicos con IA y compártelos con tus seres queridos.
                 </p>
@@ -537,7 +537,7 @@ const Dashboard = () => {
             {/* Copyright */}
             <div className="pt-4 sm:pt-6 border-t border-gray-200/50 text-center">
               <p className="text-xs sm:text-sm text-light-subtle">
-                © {new Date().getFullYear()} YourWordsForMe. Todos los derechos reservados.
+                © {new Date().getFullYear()} YourWordsToMe. Todos los derechos reservados.
               </p>
               <p className="text-xs text-light-subtle mt-1.5 sm:mt-2">
                 Hecho con ❤️ para compartir la Palabra de Dios
