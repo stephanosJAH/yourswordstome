@@ -103,6 +103,121 @@ const popularVerses = {
 };
 
 /**
+ * Mapeo de nombres de libros bíblicos español → inglés
+ */
+const bookNameMapping = {
+  // Antiguo Testamento
+  "génesis": "genesis",
+  "genesis": "genesis",
+  "éxodo": "exodus",
+  "exodo": "exodus",
+  "levítico": "leviticus",
+  "levitico": "leviticus",
+  "números": "numbers",
+  "numeros": "numbers",
+  "deuteronomio": "deuteronomy",
+  "josué": "joshua",
+  "josue": "joshua",
+  "jueces": "judges",
+  "rut": "ruth",
+  "1 samuel": "1 samuel",
+  "2 samuel": "2 samuel",
+  "1 reyes": "1 kings",
+  "2 reyes": "2 kings",
+  "1 crónicas": "1 chronicles",
+  "1 cronicas": "1 chronicles",
+  "2 crónicas": "2 chronicles",
+  "2 cronicas": "2 chronicles",
+  "esdras": "ezra",
+  "nehemías": "nehemiah",
+  "nehemias": "nehemiah",
+  "ester": "esther",
+  "job": "job",
+  "salmos": "psalms",
+  "salmo": "psalms",
+  "proverbios": "proverbs",
+  "eclesiastés": "ecclesiastes",
+  "eclesiastes": "ecclesiastes",
+  "cantares": "song of solomon",
+  "cantar de los cantares": "song of solomon",
+  "isaías": "isaiah",
+  "isaias": "isaiah",
+  "jeremías": "jeremiah",
+  "jeremias": "jeremiah",
+  "lamentaciones": "lamentations",
+  "ezequiel": "ezekiel",
+  "daniel": "daniel",
+  "oseas": "hosea",
+  "joel": "joel",
+  "amós": "amos",
+  "amos": "amos",
+  "abdías": "obadiah",
+  "abdias": "obadiah",
+  "jonás": "jonah",
+  "jonas": "jonah",
+  "miqueas": "micah",
+  "nahúm": "nahum",
+  "nahum": "nahum",
+  "habacuc": "habakkuk",
+  "sofonías": "zephaniah",
+  "sofonias": "zephaniah",
+  "hageo": "haggai",
+  "zacarías": "zechariah",
+  "zacarias": "zechariah",
+  "malaquías": "malachi",
+  "malaquias": "malachi",
+  // Nuevo Testamento
+  "mateo": "matthew",
+  "marcos": "mark",
+  "lucas": "luke",
+  "juan": "john",
+  "hechos": "acts",
+  "romanos": "romans",
+  "1 corintios": "1 corinthians",
+  "2 corintios": "2 corinthians",
+  "gálatas": "galatians",
+  "galatas": "galatians",
+  "efesios": "ephesians",
+  "filipenses": "philippians",
+  "colosenses": "colossians",
+  "1 tesalonicenses": "1 thessalonians",
+  "2 tesalonicenses": "2 thessalonians",
+  "1 timoteo": "1 timothy",
+  "2 timoteo": "2 timothy",
+  "tito": "titus",
+  "filemón": "philemon",
+  "filemon": "philemon",
+  "hebreos": "hebrews",
+  "santiago": "james",
+  "1 pedro": "1 peter",
+  "2 pedro": "2 peter",
+  "1 juan": "1 john",
+  "2 juan": "2 john",
+  "3 juan": "3 john",
+  "judas": "jude",
+  "apocalipsis": "revelation",
+};
+
+/**
+ * Convierte una referencia en español a inglés para la API
+ */
+const translateReferenceToEnglish = (ref) => {
+  const normalizedRef = ref.trim().toLowerCase();
+  
+  // Buscar coincidencia con el mapeo de libros
+  for (const [spanish, english] of Object.entries(bookNameMapping)) {
+    if (normalizedRef.startsWith(spanish)) {
+      // Reemplazar el nombre del libro manteniendo el resto de la referencia
+      const rest = normalizedRef.substring(spanish.length);
+      return english + rest;
+    }
+  }
+  
+  // Si no hay traducción, devolver el original
+  return ref;
+};
+
+/**
  * Normaliza una referencia bíblica para buscar en el cache
  */
 const normalizeReference = (ref) => {
@@ -131,35 +246,42 @@ const fetchVerseFromAPI = async (reference) => {
     return popularVerses[normalizedRef];
   }
   
-  // 2. Intentar con bible-api.com (soporta español)
+  // 2. Traducir referencia al inglés para la API
+  const englishRef = translateReferenceToEnglish(normalizedRef);
+  console.log(`Translated reference: ${normalizedRef} -> ${englishRef}`);
+  
+  // 3. Intentar con bible-api.com
   const baseUrl = "https://bible-api.com";
   
   try {
-    // Intentar con la referencia original
-    const encodedRef = encodeURIComponent(normalizedRef);
-    let response = await fetch(`${baseUrl}/${encodedRef}?translation=reina-valera-1960`);
+    // Intentar con la referencia traducida al inglés
+    const encodedRef = encodeURIComponent(englishRef);
+    let response = await fetch(`${baseUrl}/${encodedRef}`);
     
     if (response.ok) {
       const data = await response.json();
       if (data.text) {
         return {
           text: data.text.trim(),
-          reference: data.reference || normalizedRef,
-          translation: data.translation_name || "Reina Valera 1960",
+          reference: normalizedRef, // Devolver la referencia original en español
+          translation: data.translation_name || "World English Bible",
         };
       }
     }
     
-    // Intentar sin especificar traducción
-    response = await fetch(`${baseUrl}/${encodedRef}`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data.text) {
-        return {
-          text: data.text.trim(),
-          reference: data.reference || normalizedRef,
-          translation: data.translation_name || "KJV",
-        };
+    // Si no funcionó, intentar con la referencia original (por si ya está en inglés)
+    if (englishRef !== normalizedRef.toLowerCase()) {
+      const originalEncodedRef = encodeURIComponent(normalizedRef);
+      response = await fetch(`${baseUrl}/${originalEncodedRef}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.text) {
+          return {
+            text: data.text.trim(),
+            reference: normalizedRef,
+            translation: data.translation_name || "World English Bible",
+          };
+        }
       }
     }
     

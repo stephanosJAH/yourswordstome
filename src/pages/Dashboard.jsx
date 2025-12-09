@@ -399,10 +399,22 @@ const Dashboard = () => {
           {/* Grid de versículos */}
           {!versesLoading && verses.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              {verses.map((verse) => (
+              {verses.slice(0, 6).map((verse) => (
                 <div 
                   key={verse.id} 
-                  className="bg-white/70 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200/80 hover:shadow-lg transition-all"
+                  onClick={() => navigate('/result', { 
+                    state: { 
+                      verseData: {
+                        reference: verse.verseReference,
+                        originalText: verse.originalText,
+                        personalizedText: verse.personalizedText,
+                        translation: verse.translation
+                      },
+                      verseId: verse.id,
+                      isFavorite: verse.isFavorite
+                    } 
+                  })}
+                  className="bg-white/70 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200/80 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
                 >
                   {/* Header con referencia y acciones */}
                   <div className="flex justify-between items-start mb-3">
@@ -411,7 +423,10 @@ const Dashboard = () => {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => toggleFavorite(verse.id, verse.isFavorite)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(verse.id, verse.isFavorite);
+                        }}
                         className={`p-2 rounded-full transition-all ${
                           verse.isFavorite 
                             ? 'text-red-500 bg-red-50 hover:bg-red-100' 
@@ -422,7 +437,8 @@ const Dashboard = () => {
                         <Heart size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} />
                       </button>
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           if (confirm('¿Estás seguro de eliminar este versículo?')) {
                             removeVerse(verse.id);
                           }
@@ -452,23 +468,9 @@ const Dashboard = () => {
                         : 'Fecha no disponible'
                       }
                     </span>
-                    <button
-                      onClick={() => navigate('/result', { 
-                        state: { 
-                          verseData: {
-                            reference: verse.verseReference,
-                            originalText: verse.originalText,
-                            personalizedText: verse.personalizedText,
-                            translation: verse.translation
-                          },
-                          verseId: verse.id,
-                          isFavorite: verse.isFavorite
-                        } 
-                      })}
-                      className="text-primary hover:underline font-medium"
-                    >
+                    <span className="text-primary font-medium group-hover:translate-x-1 transition-transform duration-300">
                       Ver más →
-                    </button>
+                    </span>
                   </div>
                 </div>
               ))}
