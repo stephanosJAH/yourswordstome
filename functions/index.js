@@ -233,6 +233,10 @@ const hasUnlimitedAccess = (email) => {
   return email === UNLIMITED_ACCESS_EMAIL;
 };
 
+// Configuración de rate limiting por usuario
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // ventana de 1 minuto
+const RATE_LIMIT_MAX_REQUESTS = 5;       // máximo de solicitudes por ventana
+
 /**
  * Obtiene el texto del versículo desde la API de la Biblia o el cache local
  * @param {string} reference - Referencia bíblica (ej: "Juan 3:16")
@@ -379,10 +383,24 @@ exports.generateVerse = onCall(
       );
     }
 
+    if (userName.trim().length > 50) {
+      throw new HttpsError(
+        "invalid-argument",
+        "El nombre es demasiado largo (máximo 50 caracteres)."
+      );
+    }
+
     if (!verseReference || typeof verseReference !== "string") {
       throw new HttpsError(
         "invalid-argument",
         "La referencia del versículo es requerida."
+      );
+    }
+
+    if (verseReference.length > 100) {
+      throw new HttpsError(
+        "invalid-argument",
+        "La referencia del versículo es demasiado larga (máximo 100 caracteres)."
       );
     }
 
@@ -416,6 +434,21 @@ exports.generateVerse = onCall(
         );
       }
 
+      // 4b. Pre-verificar rate limit (fail-fast antes del llamado a OpenAI)
+      const now = Date.now();
+      const rlWindowStart = userData.rlWindowStart?.toMillis() ?? 0;
+      const rlCount = userData.rlCount ?? 0;
+      const windowElapsed = now - rlWindowStart;
+      const inCurrentWindow = windowElapsed < RATE_LIMIT_WINDOW_MS;
+
+      if (inCurrentWindow && rlCount >= RATE_LIMIT_MAX_REQUESTS) {
+        const secondsLeft = Math.ceil((RATE_LIMIT_WINDOW_MS - windowElapsed) / 1000);
+        throw new HttpsError(
+          "resource-exhausted",
+          `Demasiadas solicitudes. Intenta de nuevo en ${secondsLeft} segundos.`
+        );
+      }
+
       // 5. Obtener versículo de la API de la Biblia
       console.log(`Fetching verse: ${verseReference}`);
       const verseData = await fetchVerseFromAPI(verseReference);
@@ -444,6 +477,26 @@ exports.generateVerse = onCall(
           );
         }
 
+        // Verificar rate limit de forma atómica dentro de la transacción
+        const nowInTx = Date.now();
+        const freshRlWindowStart = freshUserData.rlWindowStart?.toMillis() ?? 0;
+        const freshRlCount = freshUserData.rlCount ?? 0;
+        const freshWindowElapsed = nowInTx - freshRlWindowStart;
+        const freshInWindow = freshWindowElapsed < RATE_LIMIT_WINDOW_MS;
+
+        if (freshInWindow && freshRlCount >= RATE_LIMIT_MAX_REQUESTS) {
+          const secondsLeft = Math.ceil((RATE_LIMIT_WINDOW_MS - freshWindowElapsed) / 1000);
+          throw new HttpsError(
+            "resource-exhausted",
+            `Demasiadas solicitudes. Intenta de nuevo en ${secondsLeft} segundos.`
+          );
+        }
+
+        // Campos de rate limit a actualizar
+        const rlFields = freshInWindow
+          ? { rlCount: FieldValue.increment(1) }
+          : { rlWindowStart: FieldValue.serverTimestamp(), rlCount: 1 };
+
         // Crear referencia para el nuevo versículo
         const versesRef = userRef.collection("generated_verses");
         const newVerseRef = versesRef.doc();
@@ -463,19 +516,19 @@ exports.generateVerse = onCall(
         // Guardar el versículo
         transaction.set(newVerseRef, verseDoc);
 
-        // Actualizar estadísticas del usuario
+        // Actualizar estadísticas del usuario y rate limit
         if (isUnlimited) {
-          // Usuario ilimitado: solo incrementar contador
           transaction.update(userRef, {
             totalGenerated: FieldValue.increment(1),
             lastGeneratedAt: FieldValue.serverTimestamp(),
+            ...rlFields,
           });
         } else {
-          // Usuario normal: decrementar token e incrementar contador
           transaction.update(userRef, {
             tokens: FieldValue.increment(-1),
             totalGenerated: FieldValue.increment(1),
             lastGeneratedAt: FieldValue.serverTimestamp(),
+            ...rlFields,
           });
         }
 

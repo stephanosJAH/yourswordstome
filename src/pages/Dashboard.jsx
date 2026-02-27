@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { validateReference } from '../services/bibleService';
-import { getVerseGeneratorService } from '../services/verseGeneratorService';
+import { generatePersonalizedVerse } from '../services/verseGeneratorService';
+import { getFirstName } from '../utils/nameUtils';
 import { hasUnlimitedAccess } from '../services/userService';
 import { useVersesHistory } from '../hooks/useVersesHistory';
 import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Clock } from 'lucide-react';
@@ -31,12 +32,6 @@ const Dashboard = () => {
 
   // Verificar si el usuario tiene acceso ilimitado
   const isUnlimited = userData && hasUnlimitedAccess(userData.email);
-
-  // Obtener solo el primer nombre del usuario
-  const getFirstName = (fullName) => {
-    if (!fullName) return 'amigo';
-    return fullName.split(' ')[0];
-  };
 
   // Helper para View Transitions
   const withViewTransition = (callback) => {
@@ -105,10 +100,8 @@ const Dashboard = () => {
     setLoading(true);
 
     try {
-      const verseGenerator = getVerseGeneratorService();
       const nameToUse = nameOverride || getFirstName(user.displayName);
-      const result = await verseGenerator.generatePersonalizedVerse({
-        userId: user.uid,
+      const result = await generatePersonalizedVerse({
         userName: nameToUse,
         verseReference: verseReference.trim(),
         temperature
@@ -119,12 +112,12 @@ const Dashboard = () => {
         await refreshUserData();
         
         // Navegar a la página de resultado con los datos y el verseId
-        navigate('/result', { 
-          state: { 
+        navigate('/verse', {
+          state: {
             verseData: result.data,
             verseId: result.data.verseId,
             isFavorite: false // Nuevo versículo, no es favorito
-          } 
+          }
         });
       } else {
         setError(result.message);
@@ -402,7 +395,7 @@ const Dashboard = () => {
               {verses.slice(0, 6).map((verse) => (
                 <div 
                   key={verse.id} 
-                  onClick={() => navigate('/result', { 
+                  onClick={() => navigate('/verse', { 
                     state: { 
                       verseData: {
                         reference: verse.verseReference,

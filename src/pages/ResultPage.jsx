@@ -4,10 +4,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { hasUnlimitedAccess } from '../services/userService';
 import { toggleFavorite } from '../services/verseHistoryService';
 import html2canvas from 'html2canvas';
-import { ArrowLeft, Download, Share2, Sparkles, LogOut, Copy, Check, Heart } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Sparkles, LogOut, Copy, Check, Heart, Image } from 'lucide-react';
 import ClassicStyle from '../components/visual/ClassicStyle';
 import ModernStyle from '../components/visual/ModernStyle';
 import InspirationalStyle from '../components/visual/InspirationalStyle';
+import ModernImageModal from '../components/ModernImageModal';
+import { getFirstName } from '../utils/nameUtils';
+
+// Importar imágenes locales del estilo Moderno
+const modernImageModules = import.meta.glob('../assets/modern/*.jpg', { eager: true });
+const modernImages = Object.values(modernImageModules).map(m => m.default);
 
 // Datos de prueba para desarrollo
 const DUMP_VERSE_DATA = {
@@ -91,6 +97,8 @@ const ResultPage = () => {
   const [copied, setCopied] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [togglingFavorite, setTogglingFavorite] = useState(false);
+  const [selectedModernImage, setSelectedModernImage] = useState(modernImages[0]);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   // Usar datos del state o datos de prueba para desarrollo
   const verseData = location.state?.verseData || DUMP_VERSE_DATA;
@@ -142,11 +150,6 @@ const ResultPage = () => {
     }
   };
 
-  // Obtener solo el primer nombre del usuario
-  const getFirstName = (fullName) => {
-    if (!fullName) return 'amigo';
-    return fullName.split(' ')[0];
-  };
 
   const handleLogout = async () => {
     try {
@@ -420,8 +423,60 @@ const ResultPage = () => {
               </div>
             </div>
 
+            {/* Image selector — solo visible en estilo Moderno */}
+            {selectedStyle === 'modern' && (
+              <div className="mb-6 sm:mb-8 flex items-center gap-3">
+                {/* Primeras 3 imágenes como acceso rápido */}
+                <div className="flex gap-2 flex-1 overflow-hidden">
+                  {modernImages.slice(0, 3).map((img, i) => {
+                    const isSelected = selectedModernImage === img;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedModernImage(img)}
+                        className="relative flex-1 aspect-square rounded-xl overflow-hidden focus:outline-none transition-all duration-200"
+                        style={{
+                          boxShadow: isSelected
+                            ? `0 0 0 3px ${currentTheme.primary}`
+                            : '0 0 0 2px transparent',
+                        }}
+                      >
+                        <img
+                          src={img}
+                          alt={`Imagen ${i + 1}`}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                        {isSelected && (
+                          <div className="absolute inset-0 flex items-center justify-center"
+                            style={{ backgroundColor: `${currentTheme.primary}30` }}>
+                            <div className="rounded-full p-1" style={{ backgroundColor: currentTheme.primary }}>
+                              <Check size={12} className="text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Botón Ver todas */}
+                <button
+                  onClick={() => setIsImageModalOpen(true)}
+                  className="flex-none flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all backdrop-blur-sm border"
+                  style={{
+                    backgroundColor: currentTheme.cardBg,
+                    borderColor: currentTheme.cardBorder,
+                    color: currentTheme.textPrimary,
+                  }}
+                >
+                  <Image size={16} />
+                  <span className="hidden sm:inline">Ver todas</span>
+                </button>
+              </div>
+            )}
+
             {/* Preview */}
-            <div 
+            <div
               className="backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-8 mb-6 sm:mb-8 transition-all duration-500"
               style={{
                 backgroundColor: currentTheme.cardBg,
@@ -436,6 +491,7 @@ const ResultPage = () => {
                       personalizedText={verseData.personalizedText}
                       reference={verseData.reference}
                       userName={getFirstName(user?.displayName)}
+                      image={selectedModernImage}
                     />
                   )}
                 </div>
@@ -581,6 +637,15 @@ const ResultPage = () => {
           </div>
         </main>
       </div>
+
+      {/* Modal de selección de imagen para estilo Moderno */}
+      <ModernImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        images={modernImages}
+        selectedImage={selectedModernImage}
+        onSelect={setSelectedModernImage}
+      />
     </div>
   );
 };

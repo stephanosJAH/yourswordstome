@@ -59,9 +59,7 @@ export const AuthProvider = ({ children }) => {
   const refreshUserData = async () => {
     if (user) {
       try {
-        console.log('Refrescando datos del usuario...');
         const data = await getUserData(user.uid);
-        console.log('Datos actualizados:', data);
         setUserData(data);
       } catch (error) {
         console.error('Error al refrescar datos:', error);

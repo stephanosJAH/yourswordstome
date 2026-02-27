@@ -136,24 +136,4 @@ export const useVersesHistory = (userId, options = {}) => {
   };
 };
 
-/**
- * Hook simplificado solo para favoritos
- * @param {string} userId - ID del usuario
- */
-export const useFavoriteVerses = (userId) => {
-  const result = useVersesHistory(userId);
-  
-  useEffect(() => {
-    result.setFavoritesOnly(true);
-  }, []);
-
-  return {
-    favorites: result.verses,
-    loading: result.loading,
-    error: result.error,
-    toggleFavorite: result.toggleFavorite,
-    removeVerse: result.removeVerse
-  };
-};
-
 export default useVersesHistory;

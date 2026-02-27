@@ -57,7 +57,6 @@ export const saveVerse = async (userId, verseData, options = {}) => {
       }
     }
 
-    console.log("Versículo guardado" + (updateStats ? " y stats actualizados" : ""));
     return docRef.id;
 
   } catch (error) {
@@ -100,7 +99,6 @@ export const deleteVerse = async (userId, verseId) => {
   try {
     const verseRef = doc(db, 'users', userId, 'generated_verses', verseId);
     await deleteDoc(verseRef);
-    console.log("Versículo eliminado");
   } catch (error) {
     console.error("Error eliminando versículo:", error);
     throw error;

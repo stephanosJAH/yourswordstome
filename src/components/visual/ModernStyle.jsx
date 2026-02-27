@@ -1,11 +1,11 @@
 import React from 'react';
 
-const ModernStyle = ({ personalizedText, reference }) => {
+const ModernStyle = ({ personalizedText, reference, image }) => {
   return (
-    <div 
+    <div
       className="w-[min(540px,100vw-2rem)] h-[min(540px,100vw-2rem)] relative flex flex-col justify-center items-center p-8 sm:p-12"
       style={{
-        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&h=1080&fit=crop)',
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), url(${image})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}

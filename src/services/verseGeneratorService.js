@@ -45,8 +45,8 @@ export const generatePersonalizedVerse = async ({ userName, verseReference, temp
     if (error.code === 'functions/resource-exhausted') {
       return {
         success: false,
-        error: 'insufficient_tokens',
-        message: 'No tienes tokens disponibles'
+        error: 'resource_exhausted',
+        message: error.message || 'No tienes tokens disponibles'
       };
     }
 
@@ -81,27 +81,3 @@ export const getTokensRemaining = async () => {
   }
 };
 
-/**
- * Clase legacy para compatibilidad con código existente
- * @deprecated Usar las funciones exportadas directamente
- */
-export class VerseGeneratorService {
-  constructor() {
-    console.warn('VerseGeneratorService class is deprecated. Use generatePersonalizedVerse() function directly.');
-  }
-
-  async generatePersonalizedVerse({ userId, userName, verseReference, temperature = 0.5 }) {
-    // userId ya no es necesario, la Cloud Function lo obtiene del token de auth
-    return generatePersonalizedVerse({ userName, verseReference, temperature });
-  }
-}
-
-// Instancia singleton por defecto (legacy)
-let defaultService = null;
-
-export const getVerseGeneratorService = () => {
-  if (!defaultService) {
-    defaultService = new VerseGeneratorService();
-  }
-  return defaultService;
-};

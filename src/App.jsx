@@ -44,7 +44,7 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/result"
+          path="/verse"
           element={
             <ProtectedRoute>
               <ResultPage />
