@@ -37,3 +37,6 @@ firebase-adminsdk.json
 
 # Firebase config (if contains sensitive data)
 firebase-config.json
+
+documentation
+CLAUDE.md
