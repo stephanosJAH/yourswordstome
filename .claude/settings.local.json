@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add documentation/DEPLOY_GUIDE.md)",
+      "Bash(git commit --amend --no-edit)"
+    ]
+  }
+}
