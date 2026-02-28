@@ -39,4 +39,5 @@ firebase-adminsdk.json
 firebase-config.json
 
 documentation
+/documentation/*
 CLAUDE.md
