@@ -7,6 +7,7 @@ import ResultPage from './pages/ResultPage';
 import AboutPage from './pages/AboutPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import ProfilePage from './pages/ProfilePage';
 import './index.css';
 
 // Componente para rutas protegidas
@@ -50,7 +51,15 @@ function AppRoutes() {
               <ResultPage />
             </ProtectedRoute>
           }
-        />ñ
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(git add documentation/DEPLOY_GUIDE.md)",
-      "Bash(git commit --amend --no-edit)"
+      "Bash(git commit --amend --no-edit)",
+      "Bash(git restore --staged documentation/DEPLOY_GUIDE.md)",
+      "Bash(git checkout -b clean-main d09e180)",
+      "Bash(git stash)",
+      "Bash(git push origin main)"
     ]
   }
 }

@@ -6,7 +6,7 @@ import { generatePersonalizedVerse } from '../services/verseGeneratorService';
 import { getFirstName } from '../utils/nameUtils';
 import { hasUnlimitedAccess } from '../services/userService';
 import { useVersesHistory } from '../hooks/useVersesHistory';
-import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Clock } from 'lucide-react';
+import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Clock, User } from 'lucide-react';
 import CustomNameModal from '../components/CustomNameModal';
 
 const Dashboard = () => {
@@ -146,13 +146,26 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">Hola, {getFirstName(user?.displayName)}!</span>
-              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-primary/10 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
-                <Sparkles className="text-primary" size={16} />
-                <span className="font-semibold text-primary text-xs sm:text-base">
+              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Sparkles className="text-accent" size={16} />
+                <span className="font-semibold text-accent text-xs sm:text-base">
                   {isUnlimited ? '∞' : (userData?.tokens || 0)}
                 </span>
-                <span className="text-xs sm:text-sm text-primary hidden sm:inline">tokens</span>
+                <span className="text-xs sm:text-sm text-accent hidden sm:inline">tokens</span>
               </div>
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0"
+                title="Ver perfil"
+              >
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-blue-100 flex items-center justify-center">
+                    <User size={16} className="text-accent" />
+                  </div>
+                )}
+              </button>
               <button
                 onClick={handleLogout}
                 className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
@@ -173,7 +186,7 @@ const Dashboard = () => {
 
           {/* Jumbotron */}
           <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-14 px-2">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-3 leading-tight">
               Hola <span className="italic text-accent font-normal text-3xl sm:text-4xl md:text-5xl" style={{ fontFamily: 'Playfair Display' }}>{getFirstName(user?.displayName)}</span>, genera tu versículo personalizado
             </h1>
             <p className="text-sm sm:text-base text-gray-600 px-2">
@@ -195,7 +208,7 @@ const Dashboard = () => {
                   value={verseReference}
                   onChange={(e) => setVerseReference(e.target.value)}
                   placeholder="Ej: Juan 3:16 o Salmos 23:1"
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-gray-100/80 border-transparent rounded-xl text-light-text placeholder-light-subtle focus:ring-2 focus:ring-primary focus:border-transparent transition duration-300 text-base sm:text-lg outline-none"
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-white border border-gray-300 rounded-xl text-light-text placeholder-light-subtle focus:ring-2 focus:ring-primary focus:border-primary transition duration-300 text-base sm:text-lg outline-none"
                   disabled={loading}
                 />
                 <p className="text-xs text-light-subtle mt-2 px-1">
@@ -226,7 +239,7 @@ const Dashboard = () => {
                   <span>Balanceado</span>
                   <span>Creativo</span>
                 </div>
-                <div className="flex items-start space-x-2 mt-3 p-3 bg-blue-50/50 rounded-lg border border-blue-200/50">
+                <div className="flex items-start space-x-2 mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-blue-800">
                     <strong>Literal:</strong> Más cercano al texto original. 
@@ -238,7 +251,7 @@ const Dashboard = () => {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50/50 border border-red-200/50 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                   {error}
                 </div>
               )}              {/* Generate Buttons */}
@@ -283,7 +296,7 @@ const Dashboard = () => {
           </div>
 
           {/* Ejemplos */}
-          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white/40 backdrop-blur-sm rounded-lg border border-gray-200/50">
+          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200">
             <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2.5 sm:mb-3">
               Referencias populares:
             </h3>
@@ -306,10 +319,10 @@ const Dashboard = () => {
         {/* section favorites */}
         <div id="favorites-section" className="max-w-4xl w-full mx-auto py-16 px-4">
           <div className="text-center mb-8 sm:mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full mb-4 sm:mb-6">
-              <Heart size={32} className="sm:w-10 sm:h-10 text-primary" />
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full mb-4 sm:mb-6">
+              <Heart size={32} className="sm:w-10 sm:h-10 text-accent" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3 sm:mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-accent mb-3 sm:mb-4">
               {favoritesOnly ? 'Mis Versículos Favoritos' : 'Mis Versículos Generados'}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4">
@@ -362,7 +375,7 @@ const Dashboard = () => {
             <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-lg p-8 sm:p-12 border border-gray-200/80">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full mb-6">
-                  <BookOpen size={36} className="sm:w-10 sm:h-10 text-gray-400" />
+                  <BookOpen size={36} className="sm:w-10 sm:h-10 text-gray-500" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold text-light-text mb-3">
                   {favoritesOnly 
@@ -411,7 +424,7 @@ const Dashboard = () => {
                 >
                   {/* Header con referencia y acciones */}
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                    <span className="text-xs font-semibold text-accent bg-blue-100 px-2 py-1 rounded-full">
                       {verse.verseReference}
                     </span>
                     <div className="flex gap-2">
@@ -450,7 +463,7 @@ const Dashboard = () => {
                   </p>
                   
                   {/* Footer con fecha */}
-                  <div className="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-gray-100">
+                  <div className="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-200">
                     <span>
                       {verse.createdAt instanceof Date 
                         ? verse.createdAt.toLocaleDateString('es-ES', { 
@@ -472,7 +485,7 @@ const Dashboard = () => {
         </div>
 
         {/* section footer */}
-        <footer className="w-full bg-gradient-to-t from-primary/5 to-transparent border-t border-gray-200/50 py-8 sm:py-12 px-4">
+        <footer className="w-full bg-gradient-to-t from-primary/5 to-transparent border-t border-gray-200 py-8 sm:py-12 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
               {/* Columna 1 - Sobre el proyecto */}
@@ -530,7 +543,7 @@ const Dashboard = () => {
             </div>
             
             {/* Copyright */}
-            <div className="pt-4 sm:pt-6 border-t border-gray-200/50 text-center">
+            <div className="pt-4 sm:pt-6 border-t border-gray-200 text-center">
               <p className="text-xs sm:text-sm text-light-subtle">
                 © {new Date().getFullYear()} YourWordsToMe. Todos los derechos reservados.
               </p>

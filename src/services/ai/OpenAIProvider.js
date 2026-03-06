@@ -15,6 +15,7 @@ export class OpenAIProvider extends AIProvider {
       throw new Error('API key de OpenAI no configurada');
     }
 
+    const systemPrompt = this.buildSystemPrompt(temperature);
     const prompt = this.buildPrompt(verseText, verseReference, userName, temperature);
 
     try {
@@ -29,7 +30,7 @@ export class OpenAIProvider extends AIProvider {
           messages: [
             {
               role: 'system',
-              content: 'Eres un asistente experto en teología y personalización de mensajes bíblicos.'
+              content: systemPrompt
             },
             {
               role: 'user',
