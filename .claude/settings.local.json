@@ -6,7 +6,10 @@
       "Bash(git restore --staged documentation/DEPLOY_GUIDE.md)",
       "Bash(git checkout -b clean-main d09e180)",
       "Bash(git stash)",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(mkdir -p \"c:/Users/Admin/Documents/ampiUP/projects/yourswordsforme/public\")",
+      "Bash(cp \"c:/Users/Admin/Documents/ampiUP/projects/yourswordsforme/src/assets/icons/icon.png\" \"c:/Users/Admin/Documents/ampiUP/projects/yourswordsforme/public/icon.png\")",
+      "Bash(npm run:*)"
     ]
   }
 }

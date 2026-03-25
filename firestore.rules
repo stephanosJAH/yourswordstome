@@ -64,11 +64,11 @@ service cloud.firestore {
         // Esto previene que usuarios maliciosos creen versículos sin gastar tokens
         allow create: if false;
         
-        // ACTUALIZACIÓN: Solo el propietario, SOLO el campo isFavorite
-        // Esto permite al cliente marcar/desmarcar favoritos sin modificar
-        // el contenido del versículo
+        // ACTUALIZACIÓN: Solo el propietario, SOLO campos seguros
+        // isFavorite: marcar/desmarcar favoritos
+        // styleConfig: guardar configuración visual (fuente, colores, imagen, etc.)
         allow update: if isOwner(userId)
-                      && getAffectedKeys().hasOnly(['isFavorite']);
+                      && getAffectedKeys().hasOnly(['isFavorite', 'styleConfig']);
         
         // ELIMINACIÓN: Solo el propietario puede eliminar sus versículos
         allow delete: if isOwner(userId);

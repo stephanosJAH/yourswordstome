@@ -9,15 +9,15 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: 'rgb(147 197 253 / 70%)',
-          DEFAULT: 'rgb(147 197 253 / 50%)',
+          light: '#BFDBFE',
+          DEFAULT: '#60A5FA',
           dark: '#2563EB',
         },
         secondary: '#D4AF37',
         accent: '#3B82F6',
         'light-bg': '#F7F8FA',
         'light-text': '#111827',
-        'light-subtle': '#6B7280',
+        'light-subtle': '#4B5563',
         'background-light': '#F3F4F6',
         'background-dark': '#111827',
         background: '#F7F8FA',

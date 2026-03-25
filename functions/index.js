@@ -258,32 +258,32 @@ const fetchVerseFromAPI = async (reference) => {
   const baseUrl = "https://bible-api.com";
   
   try {
-    // Intentar con la referencia traducida al inglés
+    // Intentar con la referencia traducida al inglés y traducción Reina Valera
     const encodedRef = encodeURIComponent(englishRef);
-    let response = await fetch(`${baseUrl}/${encodedRef}`);
-    
+    let response = await fetch(`${baseUrl}/${encodedRef}?translation=reinavalera`);
+
     if (response.ok) {
       const data = await response.json();
       if (data.text) {
         return {
           text: data.text.trim(),
           reference: normalizedRef, // Devolver la referencia original en español
-          translation: data.translation_name || "World English Bible",
+          translation: data.translation_name || "Reina Valera",
         };
       }
     }
-    
+
     // Si no funcionó, intentar con la referencia original (por si ya está en inglés)
     if (englishRef !== normalizedRef.toLowerCase()) {
       const originalEncodedRef = encodeURIComponent(normalizedRef);
-      response = await fetch(`${baseUrl}/${originalEncodedRef}`);
+      response = await fetch(`${baseUrl}/${originalEncodedRef}?translation=reinavalera`);
       if (response.ok) {
         const data = await response.json();
         if (data.text) {
           return {
             text: data.text.trim(),
             reference: normalizedRef,
-            translation: data.translation_name || "World English Bible",
+            translation: data.translation_name || "Reina Valera",
           };
         }
       }
@@ -324,7 +324,8 @@ Reglas:
 3. Adapta el lenguaje para que sea directo y personal
 4. No cambies el significado teológico
 5. Mantén un tono amoroso y esperanzador
-6. Responde SOLO con el versículo personalizado, sin explicaciones adicionales`;
+6. Responde SIEMPRE en español castellano, independientemente del idioma del versículo original
+7. Responde SOLO con el versículo personalizado, sin explicaciones adicionales`;
 
   const userPrompt = `Versículo original (${verseReference}):
 "${verseText}"
@@ -373,7 +374,7 @@ exports.generateVerse = onCall(
     }
 
     const userId = request.auth.uid;
-    const { userName, verseReference, temperature = 0.5 } = request.data;
+    const { userName, verseReference, temperature = 0.5, originalText, translation } = request.data;
 
     // 2. Validar parámetros
     if (!userName || typeof userName !== "string" || userName.trim().length === 0) {
@@ -449,9 +450,19 @@ exports.generateVerse = onCall(
         );
       }
 
-      // 5. Obtener versículo de la API de la Biblia
-      console.log(`Fetching verse: ${verseReference}`);
-      const verseData = await fetchVerseFromAPI(verseReference);
+      // 5. Obtener versículo (usar texto provisto por el frontend o fallback a API)
+      let verseData;
+      if (originalText && typeof originalText === "string" && originalText.trim().length > 0) {
+        console.log(`Using client-provided verse text for: ${verseReference}`);
+        verseData = {
+          text: originalText.trim(),
+          reference: verseReference,
+          translation: translation || "Reina Valera",
+        };
+      } else {
+        console.log(`Fetching verse: ${verseReference}`);
+        verseData = await fetchVerseFromAPI(verseReference);
+      }
 
       // 6. Generar versículo personalizado con OpenAI
       console.log(`Generating personalized verse for: ${userName}`);

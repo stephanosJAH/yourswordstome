@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { validateReference } from '../services/bibleService';
+import { validateReference, fetchVerse } from '../services/bibleService';
 import { generatePersonalizedVerse } from '../services/verseGeneratorService';
 import { getFirstName } from '../utils/nameUtils';
 import { hasUnlimitedAccess } from '../services/userService';
 import { useVersesHistory } from '../hooks/useVersesHistory';
-import { LogOut, Sparkles, Info, Users, Heart, BookOpen, Trash2, Clock, User } from 'lucide-react';
+import { LogOut, Sparkles, Users, Heart, BookOpen, Trash2, Clock, User } from 'lucide-react';
 import CustomNameModal from '../components/CustomNameModal';
+import { TOPICS } from '../data/versesByTopic';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -19,15 +20,16 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [customName, setCustomName] = useState(null);
+  const [selectedTopic, setSelectedTopic] = useState(null);
 
   // Hook para obtener versículos generados
-  const { 
-    verses, 
-    loading: versesLoading, 
-    toggleFavorite, 
+  const {
+    verses,
+    loading: versesLoading,
+    toggleFavorite,
     removeVerse,
     favoritesOnly,
-    setFavoritesOnly 
+    setFavoritesOnly,
   } = useVersesHistory(user?.uid);
 
   // Verificar si el usuario tiene acceso ilimitado
@@ -101,10 +103,23 @@ const Dashboard = () => {
 
     try {
       const nameToUse = nameOverride || getFirstName(user.displayName);
+
+      // Obtener el texto del versículo en español desde scripture.api.bible
+      let verseText, verseTranslation;
+      try {
+        const fetched = await fetchVerse(verseReference.trim());
+        verseText = fetched.text;
+        verseTranslation = fetched.translation_name;
+      } catch {
+        // Si falla, la Cloud Function usará su propio fetch como fallback
+      }
+
       const result = await generatePersonalizedVerse({
         userName: nameToUse,
         verseReference: verseReference.trim(),
-        temperature
+        temperature,
+        originalText: verseText,
+        translation: verseTranslation,
       });
 
       if (result.success) {
@@ -195,7 +210,7 @@ const Dashboard = () => {
           </div>
 
           {/* Formulario */}
-          <div className="w-full p-1.5 sm:p-2 bg-white/50 backdrop-blur-md border border-gray-200/80 rounded-large shadow-lg">
+          <div className="w-full p-1.5 sm:p-2 bg-white/65 backdrop-blur-md border border-gray-200 rounded-large shadow-lg">
             <div className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-6">
               {/* Input de Referencia */}
               <div>
@@ -214,7 +229,8 @@ const Dashboard = () => {
                 <p className="text-xs text-light-subtle mt-2 px-1">
                   Formato: [Libro] [Capítulo]:[Versículo] (Ej: Juan 14:27, Salmos 23:1-3)
                 </p>
-              </div>              {/* Slider de Temperatura */}
+              </div>              
+              {/* Slider de Temperatura */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-sm font-semibold text-light-text">
@@ -234,18 +250,39 @@ const Dashboard = () => {
                   className="w-full accent-primary"
                   disabled={loading}
                 />
-                <div className="flex justify-between text-xs text-light-subtle mt-2">
-                  <span>Literal</span>
-                  <span>Balanceado</span>
-                  <span>Creativo</span>
-                </div>
-                <div className="flex items-start space-x-2 mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-blue-800">
-                    <strong>Literal:</strong> Más cercano al texto original. 
-                    <strong> Balanceado:</strong> Recomendado, equilibrio perfecto. 
-                    <strong> Creativo:</strong> Interpretación más libre.
-                  </p>
+                {/* Labels for the slider */}
+                <div className="flex justify-between mt-3 gap-1">
+                  {[
+                    { key: 'literal', label: 'Literal', desc: 'Fiel al texto original', icon: '📖', check: (t) => t < 0.35 },
+                    { key: 'balanced', label: 'Balanceado', desc: 'Equilibrio perfecto', icon: '⚖️', check: (t) => t >= 0.35 && t <= 0.65 },
+                    { key: 'creative', label: 'Creativo', desc: 'Interpretación libre', icon: '✨', check: (t) => t > 0.65 },
+                  ].map((item) => {
+                    const isActive = item.check(temperature);
+                    return (
+                      <div
+                        key={item.key}
+                        className={`flex-1 text-center px-2 py-2.5 rounded-xl border transition-all duration-300 ${
+                          isActive
+                            ? 'bg-primary/10 border-primary/30 shadow-sm scale-[1.03]'
+                            : 'bg-gray-50/50 border-transparent'
+                        }`}
+                      >
+                        <span className={`text-base block mb-0.5 transition-transform duration-300 ${isActive ? 'scale-110' : 'grayscale opacity-50'}`}>
+                          {item.icon}
+                        </span>
+                        <span className={`text-xs font-semibold block transition-colors duration-300 ${
+                          isActive ? 'text-primary' : 'text-gray-400'
+                        }`}>
+                          {item.label}
+                        </span>
+                        <span className={`text-[10px] leading-tight block mt-0.5 transition-colors duration-300 ${
+                          isActive ? 'text-primary/80' : 'text-gray-400'
+                        }`}>
+                          {item.desc}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -269,7 +306,7 @@ const Dashboard = () => {
                   ) : (
                     <>
                       <Sparkles size={18} className="sm:w-5 sm:h-5" />
-                      <span>Personalizar con IA</span>
+                      <span>Generar versiculo para vos!</span>
                     </>
                   )}
                 </button>
@@ -277,7 +314,7 @@ const Dashboard = () => {
                 <button
                   onClick={handleOpenModal}
                   disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
-                  className="w-full bg-white border-2 border-gray-300 text-light-text hover:bg-gray-50 font-semibold py-3 sm:py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base"
+                  className="w-full bg-white border-2 border-gray-300 text-accent hover:bg-blue-50 hover:border-accent font-semibold py-3 sm:py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base"
                 >
                   <Users size={18} className="sm:w-5 sm:h-5" />
                   <span>Generar para otra persona</span>
@@ -295,7 +332,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Ejemplos */}
+          {/* Ejemplos 
           <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white/60 backdrop-blur-sm rounded-lg border border-gray-200">
             <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2.5 sm:mb-3">
               Referencias populares:
@@ -312,45 +349,88 @@ const Dashboard = () => {
                 </button>
               ))}
             </div>
+          </div>*/}
+
+          {/* Explorar por temas */}
+          <div className="mt-4 p-4 sm:p-6 bg-white/75 backdrop-blur-sm rounded-lg border border-gray-200">
+            <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2.5 sm:mb-3">
+              Explorar por tema:
+            </h3>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+              {TOPICS.map((topic) => (
+                <button
+                  key={topic.id}
+                  onClick={() => setSelectedTopic(selectedTopic?.id === topic.id ? null : topic)}
+                  disabled={loading}
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium border transition-colors disabled:opacity-50 ${
+                    selectedTopic?.id === topic.id
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white border-gray-300 text-light-text hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  {topic.emoji} {topic.label}
+                </button>
+              ))}
+            </div>
+            {selectedTopic && (
+              <div className="pt-3 border-t border-gray-200">
+                <p className="text-xs text-light-subtle mb-2">Versículos de {selectedTopic.label}:</p>
+                <div className="flex flex-col gap-2">
+                  {selectedTopic.verses.map((verse) => (
+                    <button
+                      key={verse.cita}
+                      disabled={loading}
+                      onClick={() => {
+                        setVerseReference(verse.cita);
+                        document.getElementById('verse-reference')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }}
+                      className="text-left px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 transition-colors disabled:opacity-50 group"
+                    >
+                      <span className="text-xs font-semibold text-primary group-hover:underline">{verse.cita}</span>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{verse.texto}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
 
-        {/* section favorites */}
+        {/* section favorites - solo se muestra si hay versículos */}
+        {!versesLoading && verses.length > 0 && (
         <div id="favorites-section" className="max-w-4xl w-full mx-auto py-16 px-4">
           <div className="text-center mb-8 sm:mb-12">
             <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full mb-4 sm:mb-6">
-              <Heart size={32} className="sm:w-10 sm:h-10 text-accent" />
+              <Clock size={32} className="sm:w-10 sm:h-10 text-accent" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-accent mb-3 sm:mb-4">
-              {favoritesOnly ? 'Mis Versículos Favoritos' : 'Mis Versículos Generados'}
+              Últimos versículos generados
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4">
-              {favoritesOnly 
-                ? 'Tus versículos guardados como favoritos' 
-                : 'Todos tus versículos personalizados'}
+              Tus versículos más recientes, ordenados por fecha de creación
             </p>
-            
+
             {/* Toggle Favoritos / Todos */}
             <div className="flex justify-center gap-2">
               <button
                 onClick={() => setFavoritesOnly(false)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  !favoritesOnly 
-                    ? 'bg-primary text-white' 
+                  !favoritesOnly
+                    ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 <span className="flex items-center gap-2">
                   <Clock size={16} />
-                  Todos
+                  Últimos
                 </span>
               </button>
               <button
                 onClick={() => setFavoritesOnly(true)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  favoritesOnly 
-                    ? 'bg-primary text-white' 
+                  favoritesOnly
+                    ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -362,54 +442,13 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Loading State */}
-          {versesLoading && (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-gray-500">Cargando versículos...</p>
-            </div>
-          )}
-
-          {/* Empty State */}
-          {!versesLoading && verses.length === 0 && (
-            <div className="bg-white/50 backdrop-blur-md rounded-2xl shadow-lg p-8 sm:p-12 border border-gray-200/80">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full mb-6">
-                  <BookOpen size={36} className="sm:w-10 sm:h-10 text-gray-500" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-light-text mb-3">
-                  {favoritesOnly 
-                    ? 'Aún no tienes versículos favoritos' 
-                    : 'Aún no has generado versículos'}
-                </h3>
-                <p className="text-sm sm:text-base text-light-subtle mb-6 max-w-sm mx-auto">
-                  {favoritesOnly 
-                    ? 'Marca versículos como favoritos para verlos aquí' 
-                    : 'Genera tu primer versículo personalizado'}
-                </p>
-                <button
-                  onClick={() => {
-                    document.getElementById('generate-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 sm:px-8 rounded-xl transition-all text-sm sm:text-base shadow-lg hover:shadow-primary/40"
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles size={18} />
-                    Generar versículo
-                  </span>
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Grid de versículos */}
-          {!versesLoading && verses.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {verses.slice(0, 6).map((verse) => (
                 <div 
                   key={verse.id} 
-                  onClick={() => navigate('/verse', { 
-                    state: { 
+                  onClick={() => navigate('/verse', {
+                    state: {
                       verseData: {
                         reference: verse.verseReference,
                         originalText: verse.originalText,
@@ -417,10 +456,11 @@ const Dashboard = () => {
                         translation: verse.translation
                       },
                       verseId: verse.id,
-                      isFavorite: verse.isFavorite
-                    } 
+                      isFavorite: verse.isFavorite,
+                      styleConfig: verse.styleConfig || null
+                    }
                   })}
-                  className="bg-white/70 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200/80 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+                  className="bg-white/85 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
                 >
                   {/* Header con referencia y acciones */}
                   <div className="flex justify-between items-start mb-3">
@@ -481,8 +521,18 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          )}
+            {/* Enlace al historial completo */}
+            <div className="mt-6 text-center">
+              <Link
+                to="/history"
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+              >
+                <BookOpen size={16} />
+                Ver historial completo
+              </Link>
+            </div>
         </div>
+        )}
 
         {/* section footer */}
         <footer className="w-full bg-gradient-to-t from-primary/5 to-transparent border-t border-gray-200 py-8 sm:py-12 px-4">

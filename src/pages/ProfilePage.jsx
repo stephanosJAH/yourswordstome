@@ -20,7 +20,7 @@ import {
 const INITIAL_TOKENS = 5;
 
 const StatCard = ({ icon: Icon, label, value, sub, accent }) => (
-  <div className="bg-white/70 backdrop-blur-md rounded-xl border border-gray-200/80 p-5 flex flex-col gap-2 shadow-sm">
+  <div className="bg-white/85 backdrop-blur-md rounded-xl border border-gray-200 p-5 flex flex-col gap-2 shadow-sm">
     <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full mb-1 ${accent ?? 'bg-blue-100'}`}>
       <Icon size={20} className="text-accent" />
     </div>
@@ -96,7 +96,7 @@ const ProfilePage = () => {
         <main className="container mx-auto px-4 py-8 max-w-3xl space-y-6 animate-fade-in-up">
 
           {/* Avatar + Identity */}
-          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {user?.photoURL ? (
               <img
                 src={user.photoURL}
@@ -130,7 +130,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Token card */}
-          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 p-6 shadow-md">
+          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-6 shadow-md">
             <h3 className="text-base font-semibold text-light-text mb-4 flex items-center gap-2">
               <Sparkles size={16} className="text-accent" />
               Tokens
@@ -199,7 +199,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Quick links */}
-          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-gray-200/80 p-5 shadow-md">
+          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-5 shadow-md">
             <h3 className="text-sm font-semibold text-light-subtle uppercase tracking-wide mb-4">Accesos rápidos</h3>
             <div className="flex flex-col sm:flex-row gap-3">
               <button

@@ -106,6 +106,22 @@ export const deleteVerse = async (userId, verseId) => {
 };
 
 /**
+ * Guardar la configuración de estilo visual de un versículo
+ * @param {string} userId - ID del usuario
+ * @param {string} verseId - ID del documento del versículo
+ * @param {Object} styleConfig - Configuración de estilo
+ */
+export const saveStyleConfig = async (userId, verseId, styleConfig) => {
+  try {
+    const verseRef = doc(db, 'users', userId, 'generated_verses', verseId);
+    await updateDoc(verseRef, { styleConfig });
+  } catch (error) {
+    console.error("Error guardando configuración de estilo:", error);
+    throw error;
+  }
+};
+
+/**
  * Actualizar el tema/topic de un versículo
  * @param {string} userId - ID del usuario
  * @param {string} verseId - ID del documento del versículo

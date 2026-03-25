@@ -16,15 +16,16 @@ import { functions } from '../config/firebase';
  * @param {number} params.temperature - Temperatura de creatividad (0-1)
  * @returns {Promise<Object>} - Resultado de la generación
  */
-export const generatePersonalizedVerse = async ({ userName, verseReference, temperature = 0.5 }) => {
+export const generatePersonalizedVerse = async ({ userName, verseReference, temperature = 0.5, originalText, translation }) => {
   try {
     // Llamar a la Cloud Function
     const generateVerseFunction = httpsCallable(functions, 'generateVerse');
-    
+
     const result = await generateVerseFunction({
       userName,
       verseReference,
-      temperature
+      temperature,
+      ...(originalText && { originalText, translation }),
     });
 
     // La Cloud Function retorna { success: true, data: {...} }

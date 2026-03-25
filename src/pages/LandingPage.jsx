@@ -70,7 +70,7 @@ const LandingPage = () => {
               </>
             )}
           </button>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-sm text-gray-600 mt-4">
             5 generaciones gratuitas • Sin tarjeta de crédito
           </p>
         </div>
@@ -113,12 +113,12 @@ const LandingPage = () => {
       </section>
 
       {/* Example */}
-      <section className="container mx-auto px-4 py-16 bg-gray-50 rounded-2xl my-16">
+      <section className="container mx-auto px-4 py-16 bg-white/60 backdrop-blur-sm border border-gray-200/80 rounded-2xl my-16">
         <h2 className="text-3xl font-bold text-center text-primary mb-12">
           Ejemplo de Personalización
         </h2>
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
             <p className="text-sm text-gray-500 mb-2">Original</p>
             <p className="text-lg text-gray-700 italic">
               "El Señor es mi pastor; nada me faltará."
