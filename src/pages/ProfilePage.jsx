@@ -20,9 +20,9 @@ import {
 const INITIAL_TOKENS = 5;
 
 const StatCard = ({ icon: Icon, label, value, sub, accent }) => (
-  <div className="bg-white/85 backdrop-blur-md rounded-xl border border-gray-200 p-5 flex flex-col gap-2 shadow-sm">
-    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full mb-1 ${accent ?? 'bg-blue-100'}`}>
-      <Icon size={20} className="text-accent" />
+  <div className="glass-card p-5 flex flex-col gap-2">
+    <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl mb-1 ${accent ?? 'bg-primary/10'}`}>
+      <Icon size={20} className="text-primary" aria-hidden="true" />
     </div>
     <p className="text-2xl font-bold text-light-text">{value}</p>
     <p className="text-sm font-medium text-light-text">{label}</p>
@@ -66,8 +66,8 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background */}
-      <div className="background-gradient fixed inset-0 z-0" />
-      <div className="ethereal-blur fixed inset-0 z-0" />
+      <div className="background-gradient fixed inset-0 z-0" aria-hidden="true" />
+      <div className="ethereal-blur fixed inset-0 z-0" aria-hidden="true" />
 
       <div className="relative z-10">
         {/* Header */}
@@ -75,37 +75,38 @@ const ProfilePage = () => {
           <div className="container mx-auto flex justify-between items-center">
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 text-light-text hover:text-accent transition-colors"
+              className="flex items-center gap-2 text-light-text hover:text-accent transition-colors touch-target"
+              aria-label="Volver al dashboard"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={18} aria-hidden="true" />
               <span className="text-sm font-medium">Dashboard</span>
             </button>
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-red-500 transition-colors"
-              title="Cerrar sesión"
+              className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-red-500 transition-colors touch-target"
+              aria-label="Cerrar sesión"
             >
-              <LogOut size={16} />
+              <LogOut size={16} aria-hidden="true" />
               <span className="hidden sm:inline">Salir</span>
             </button>
           </div>
         </header>
 
         {/* Main */}
-        <main className="container mx-auto px-4 py-8 max-w-3xl space-y-6 animate-fade-in-up">
+        <main className="container mx-auto px-4 py-8 max-w-3xl space-y-6 animate-fade-in-up" id="main-content">
 
           {/* Avatar + Identity */}
-          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <div className="glass-card p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center sm:items-start gap-5">
             {user?.photoURL ? (
               <img
                 src={user.photoURL}
-                alt={user.displayName}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-4 ring-blue-100 flex-shrink-0"
+                alt=""
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover ring-4 ring-primary/20 flex-shrink-0"
               />
             ) : (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <User size={36} className="text-accent" />
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <User size={36} className="text-primary" aria-hidden="true" />
               </div>
             )}
             <div className="flex-1 text-center sm:text-left">
@@ -113,26 +114,26 @@ const ProfilePage = () => {
                 {user?.displayName || 'Usuario'}
               </h2>
               <p className="flex items-center justify-center sm:justify-start gap-1.5 text-sm text-light-subtle mb-3">
-                <Mail size={14} />
+                <Mail size={14} aria-hidden="true" />
                 {user?.email}
               </p>
               {isUnlimited && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full mb-3">
-                  <Sparkles size={12} />
+                  <Sparkles size={12} aria-hidden="true" />
                   Acceso ilimitado
                 </span>
               )}
               <p className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-light-subtle">
-                <Calendar size={13} />
+                <Calendar size={13} aria-hidden="true" />
                 Miembro desde {formatDate(userData?.createdAt)}
               </p>
             </div>
           </div>
 
           {/* Token card */}
-          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-6 shadow-md">
+          <div className="glass-card p-6 shadow-md">
             <h3 className="text-base font-semibold text-light-text mb-4 flex items-center gap-2">
-              <Sparkles size={16} className="text-accent" />
+              <Sparkles size={16} className="text-primary" aria-hidden="true" />
               Tokens
             </h3>
 
@@ -199,21 +200,21 @@ const ProfilePage = () => {
           </div>
 
           {/* Quick links */}
-          <div className="bg-white/85 backdrop-blur-md rounded-2xl border border-gray-200 p-5 shadow-md">
+          <div className="glass-card p-5 shadow-md">
             <h3 className="text-sm font-semibold text-light-subtle uppercase tracking-wide mb-4">Accesos rápidos</h3>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex-1 bg-accent text-white font-semibold py-3 px-5 rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 text-sm shadow-md"
+                className="flex-1 bg-primary text-white font-semibold py-3 px-5 rounded-xl hover:bg-primary-dark transition-all flex items-center justify-center gap-2 text-sm shadow-md touch-target"
               >
-                <Sparkles size={16} />
+                <Sparkles size={16} aria-hidden="true" />
                 Generar versículo
               </button>
               <Link
                 to="/about"
-                className="flex-1 bg-white border border-gray-200 text-light-text font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm"
+                className="flex-1 bg-white border border-gray-200 text-light-text font-semibold py-3 px-5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm touch-target"
               >
-                <BookOpen size={16} />
+                <BookOpen size={16} aria-hidden="true" />
                 Acerca de
               </Link>
             </div>
@@ -223,9 +224,10 @@ const ProfilePage = () => {
           <div className="text-center pb-8">
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 text-sm text-light-subtle hover:text-red-500 transition-colors py-2 px-4 rounded-lg hover:bg-red-50"
+              className="inline-flex items-center gap-2 text-sm text-light-subtle hover:text-red-500 transition-colors py-2 px-4 rounded-lg hover:bg-red-50 touch-target"
+              aria-label="Cerrar sesión"
             >
-              <LogOut size={15} />
+              <LogOut size={15} aria-hidden="true" />
               Cerrar sesión
             </button>
           </div>

@@ -53,8 +53,8 @@ const HistoryPage = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background */}
-      <div className="background-gradient fixed inset-0 z-0"></div>
-      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      <div className="background-gradient fixed inset-0 z-0" aria-hidden="true"></div>
+      <div className="ethereal-blur fixed inset-0 z-0" aria-hidden="true"></div>
 
       <div className="relative z-10">
         {/* Header */}
@@ -63,9 +63,10 @@ const HistoryPage = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-accent transition-colors"
+                className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-accent transition-colors touch-target"
+                aria-label="Volver al dashboard"
               >
-                <ArrowLeft size={16} />
+                <ArrowLeft size={16} aria-hidden="true" />
                 <span className="hidden sm:inline">Dashboard</span>
               </button>
               <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">
@@ -77,8 +78,8 @@ const HistoryPage = () => {
               <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">
                 Hola, {getFirstName(user?.displayName)}!
               </span>
-              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
-                <Sparkles className="text-accent" size={16} />
+              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full" aria-label={`Tokens disponibles: ${isUnlimited ? 'ilimitados' : userData?.tokens || 0}`}>
+                <Sparkles className="text-accent" size={16} aria-hidden="true" />
                 <span className="font-semibold text-accent text-xs sm:text-base">
                   {isUnlimited ? '∞' : userData?.tokens || 0}
                 </span>
@@ -86,22 +87,23 @@ const HistoryPage = () => {
               </div>
               <button
                 onClick={() => navigate('/profile')}
-                className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0"
-                title="Ver perfil"
+                className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0 touch-target"
+                aria-label="Ver perfil"
               >
                 {user?.photoURL ? (
-                  <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                  <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-blue-100 flex items-center justify-center">
-                    <User size={16} className="text-accent" />
+                    <User size={16} className="text-accent" aria-hidden="true" />
                   </div>
                 )}
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md touch-target"
+                aria-label="Cerrar sesión"
               >
-                <LogOut size={16} />
+                <LogOut size={16} aria-hidden="true" />
                 <span className="hidden sm:inline text-sm">Salir</span>
               </button>
             </div>
@@ -109,12 +111,12 @@ const HistoryPage = () => {
         </header>
 
         {/* Main */}
-        <main className="max-w-5xl mx-auto px-4 pb-16 pt-4">
+        <main className="max-w-5xl mx-auto px-4 pb-16 pt-4" id="main-content">
 
           {/* Título + stats */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-              <BookOpen size={28} className="text-accent" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl mb-4">
+              <BookOpen size={28} className="text-primary" aria-hidden="true" />
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold text-accent mb-1">
               Historial de Versículos
@@ -129,13 +131,15 @@ const HistoryPage = () => {
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             {/* Buscador */}
             <div className="relative flex-1">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <label htmlFor="verse-search" className="visually-hidden">Buscar versículos</label>
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" aria-hidden="true" />
               <input
-                type="text"
+                id="verse-search"
+                type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar por referencia o texto..."
-                className="w-full pl-9 pr-9 py-2.5 bg-white/85 backdrop-blur-sm border border-gray-200 rounded-xl text-sm text-light-text placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+                className="w-full pl-9 pr-9 py-2.5 glass-card text-sm text-light-text placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
               />
               {searchQuery && (
                 <button
@@ -148,7 +152,7 @@ const HistoryPage = () => {
             </div>
 
             {/* Toggle todos / favoritos */}
-            <div className="flex bg-white/85 backdrop-blur-sm border border-gray-200 rounded-xl p-1 gap-1 self-start sm:self-auto">
+            <div className="flex surface-elevated p-1 gap-1 self-start sm:self-auto">
               <button
                 onClick={() => setFavoritesOnly(false)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -179,8 +183,8 @@ const HistoryPage = () => {
 
           {/* Loading */}
           {versesLoading && (
-            <div className="text-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <div className="text-center py-20" role="status" aria-label="Cargando versículos">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" aria-hidden="true"></div>
               <p className="mt-4 text-gray-500 text-sm">Cargando versículos...</p>
             </div>
           )}
@@ -202,9 +206,9 @@ const HistoryPage = () => {
 
           {/* Empty state */}
           {!versesLoading && verses.length === 0 && (
-            <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg p-10 border border-gray-200 text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
-                <BookOpen size={36} className="text-gray-400" />
+            <div className="glass-card shadow-lg p-10 text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-2xl mb-6">
+                <BookOpen size={36} className="text-gray-400" aria-hidden="true" />
               </div>
               <h3 className="text-lg font-semibold text-light-text mb-2">
                 {favoritesOnly ? 'Aún no tienes versículos favoritos' : 'Aún no has generado versículos'}
@@ -251,11 +255,32 @@ const HistoryPage = () => {
                         },
                       })
                     }
-                    className="bg-white/85 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+                    className="glass-card glass-card-hover p-5 cursor-pointer group"
+                    role="article"
+                    aria-label={`Versículo ${verse.verseReference}`}  
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate('/verse', {
+                          state: {
+                            verseData: {
+                              reference: verse.verseReference,
+                              originalText: verse.originalText,
+                              personalizedText: verse.personalizedText,
+                              translation: verse.translation,
+                            },
+                            verseId: verse.id,
+                            isFavorite: verse.isFavorite,
+                            styleConfig: verse.styleConfig || null,
+                          },
+                        });
+                      }
+                    }}
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start mb-3">
-                      <span className="text-xs font-semibold text-accent bg-blue-100 px-2 py-1 rounded-full">
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
                         {verse.verseReference}
                       </span>
                       <div className="flex gap-1">
@@ -264,14 +289,15 @@ const HistoryPage = () => {
                             e.stopPropagation();
                             toggleFavorite(verse.id, verse.isFavorite);
                           }}
-                          className={`p-2 rounded-full transition-all ${
+                          className={`p-2 rounded-full transition-all touch-target ${
                             verse.isFavorite
                               ? 'text-red-500 bg-red-50 hover:bg-red-100'
                               : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                           }`}
-                          title={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                          aria-label={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                          aria-pressed={verse.isFavorite}
                         >
-                          <Heart size={16} fill={verse.isFavorite ? 'currentColor' : 'none'} />
+                          <Heart size={16} fill={verse.isFavorite ? 'currentColor' : 'none'} aria-hidden="true" />
                         </button>
                         <button
                           onClick={(e) => {
@@ -280,10 +306,10 @@ const HistoryPage = () => {
                               removeVerse(verse.id);
                             }
                           }}
-                          className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                          title="Eliminar versículo"
+                          className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all touch-target"
+                          aria-label={`Eliminar versículo ${verse.verseReference}`}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={16} aria-hidden="true" />
                         </button>
                       </div>
                     </div>

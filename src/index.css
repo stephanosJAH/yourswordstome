@@ -20,14 +20,31 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #F7FAFC;
+    scroll-behavior: smooth;
   }
 
   * {
     box-sizing: border-box;
   }
+
+  /* Accessible focus styles */
+  :focus {
+    outline: none;
+  }
+  
+  :focus-visible {
+    outline: 3px solid #3B82F6;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Scroll margin for sticky header targets */
+  :target {
+    scroll-margin-top: 80px;
+  }
 }
 
-/* Smooth transitions for dark mode */
+/* Smooth transitions for dark mode + reduced motion support */
 @layer utilities {
   * {
     transition-property: background-color, border-color, color, fill, stroke, opacity;
@@ -36,14 +53,54 @@
   }
   
   @media (prefers-reduced-motion: reduce) {
-    * {
-      transition: none !important;
-      animation: none !important;
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 }
 
-/* Background pattern - Subtle dots */
+/* ── Accessibility Utilities ──────────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: #2563EB;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid #60A5FA;
+  outline-offset: 2px;
+}
+
+/* ── Component Styles ─────────────────────────────────────────────────────── */
 @layer components {
   .background-gradient {
     background: transparent;
@@ -60,6 +117,49 @@
         radial-gradient(circle at 85% 70%, rgba(236, 72, 153, 0.30) 0%, transparent 40%),
         radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.25) 0%, transparent 50%);
     pointer-events: none;
+  }
+
+  /* Glass card – refined with depth */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 1.25rem;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.04),
+      0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  .glass-card-hover {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 16px 48px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Elevated surface */
+  .surface-elevated {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(209, 213, 219, 0.6);
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Touch-friendly target size (WCAG 2.5.8) */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

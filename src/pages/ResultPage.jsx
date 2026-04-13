@@ -415,31 +415,32 @@ const ResultPage = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background — mismo que Dashboard */}
-      <div className="background-gradient fixed inset-0 z-0"></div>
-      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      <div className="background-gradient fixed inset-0 z-0" aria-hidden="true"></div>
+      <div className="ethereal-blur fixed inset-0 z-0" aria-hidden="true"></div>
 
       {/* Content */}
       <div className="relative z-10">
 
       {/* Header */}
       <header className="w-full px-4 sm:px-8 py-4 sm:py-6">
-        <div className="container mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-0">
+        <nav className="container mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-0" aria-label="Navegación del resultado">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-accent transition-colors"
+              className="flex items-center gap-1.5 text-sm text-light-subtle hover:text-accent transition-colors touch-target"
+              aria-label="Volver al dashboard"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} aria-hidden="true" />
               <span className="hidden sm:inline">Dashboard</span>
             </button>
-            <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">
               Hola, {getFirstName(user?.displayName)}!
             </span>
-            <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
-              <Sparkles className="text-accent" size={16} />
+            <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full" aria-label={`Tokens disponibles: ${isUnlimited ? 'ilimitados' : (userData?.tokens || 0)}`}>
+              <Sparkles className="text-accent" size={16} aria-hidden="true" />
               <span className="font-semibold text-accent text-xs sm:text-base">
                 {isUnlimited ? '∞' : (userData?.tokens || 0)}
               </span>
@@ -447,26 +448,27 @@ const ResultPage = () => {
             </div>
             <button
               onClick={() => navigate('/profile')}
-              className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0"
-              title="Ver perfil"
+              className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0 touch-target"
+              aria-label="Ver perfil"
             >
               {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-blue-100 flex items-center justify-center">
-                  <User size={16} className="text-accent" />
+                  <User size={16} className="text-accent" aria-hidden="true" />
                 </div>
               )}
             </button>
             <button
               onClick={handleLogout}
-              className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
+              className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md touch-target"
+              aria-label="Cerrar sesión"
             >
-              <LogOut size={16} />
+              <LogOut size={16} aria-hidden="true" />
               <span className="hidden sm:inline text-sm">Salir</span>
             </button>
           </div>
-        </div>
+        </nav>
       </header>
 
       {/* Main */}
@@ -641,19 +643,22 @@ const ResultPage = () => {
               <div className="absolute bottom-3 right-3 flex gap-2 z-10">
                 {verseId && (
                   <button onClick={handleToggleFavorite} disabled={togglingFavorite}
-                    className={`p-2.5 rounded-full backdrop-blur-sm transition-all disabled:opacity-50 ${
+                    className={`p-2.5 rounded-full backdrop-blur-sm transition-all disabled:opacity-50 touch-target ${
                       isFavorite ? 'bg-red-500 text-white shadow-lg' : 'bg-white/70 text-red-500 hover:bg-white'
-                    }`}>
-                    <Heart size={18} className={isFavorite ? 'fill-current' : ''} />
+                    }`}
+                    aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                    aria-pressed={isFavorite}>
+                    <Heart size={18} className={isFavorite ? 'fill-current' : ''} aria-hidden="true" />
                   </button>
                 )}
                 {verseId && (
                   <button onClick={handleSaveStyle} disabled={saving}
-                    className={`p-2.5 rounded-full backdrop-blur-sm transition-all disabled:opacity-50 ${
+                    className={`p-2.5 rounded-full backdrop-blur-sm transition-all disabled:opacity-50 touch-target ${
                       saved ? 'bg-green-500 text-white shadow-lg' : 'bg-white/70 text-accent hover:bg-white'
-                    }`}>
+                    }`}
+                    aria-label={saved ? 'Estilo guardado' : 'Guardar estilo'}>
                     {saving ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent" />
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent" aria-hidden="true" />
                     ) : saved ? (
                       <Check size={18} />
                     ) : (
@@ -662,22 +667,25 @@ const ResultPage = () => {
                   </button>
                 )}
                 <button onClick={handleDownload} disabled={downloading}
-                  className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-primary hover:bg-white transition-all disabled:opacity-50">
+                  className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-primary hover:bg-white transition-all disabled:opacity-50 touch-target"
+                  aria-label="Descargar imagen">
                   {downloading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" />
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary" aria-hidden="true" />
                   ) : (
                     <Download size={18} />
                   )}
                 </button>
                 {navigator.share && (
                   <button onClick={handleShare}
-                    className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-light-text hover:bg-white transition-all sm:hidden">
-                    <Share2 size={18} />
+                    className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-light-text hover:bg-white transition-all sm:hidden touch-target"
+                    aria-label="Compartir imagen">
+                    <Share2 size={18} aria-hidden="true" />
                   </button>
                 )}
                 <button onClick={handleCopyText}
-                  className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-light-text hover:bg-white transition-all hidden sm:flex">
-                  {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
+                  className="p-2.5 rounded-full bg-white/70 backdrop-blur-sm text-light-text hover:bg-white transition-all hidden sm:flex touch-target"
+                  aria-label={copied ? 'Texto copiado' : 'Copiar texto'}>
+                  {copied ? <Check size={18} className="text-green-600" aria-hidden="true" /> : <Copy size={18} aria-hidden="true" />}
                 </button>
               </div>
             )}
@@ -705,12 +713,15 @@ const ResultPage = () => {
           </div>
 
           {/* ── 5 Tab buttons ── */}
-          <div className="flex gap-1 mb-1">
+          <div className="flex gap-1 mb-1" role="tablist" aria-label="Opciones de edición">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl border transition-all ${
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                className={`flex-1 flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl border transition-all touch-target ${
                   activeTab === tab.id
                     ? 'bg-blue-50 border-accent text-accent'
                     : 'bg-white/60 backdrop-blur-sm border-gray-200 text-light-subtle hover:bg-white hover:text-light-text'
@@ -724,13 +735,13 @@ const ResultPage = () => {
 
           {/* ── Tab panel ── */}
           {activeTab && (
-            <div className="bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl mb-4 min-h-[160px] shadow-sm">
+            <div className="glass-card mb-4 min-h-[160px] shadow-sm" role="tabpanel" id={`panel-${activeTab}`} aria-label={tabs.find(t => t.id === activeTab)?.label}>
               {renderTabPanel()}
             </div>
           )}
 
           {/* ── Original text ── */}
-          <div className="p-4 sm:p-5 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl mb-4">
+          <div className="p-4 sm:p-5 surface-elevated mb-4">
             <h3 className="text-xs font-semibold text-light-subtle mb-2">Texto Original</h3>
             <p className="text-sm italic text-light-subtle mb-2">"{verseData.originalText}"</p>
             <p className="text-xs text-gray-400">— {verseData.reference} ({verseData.translation})</p>

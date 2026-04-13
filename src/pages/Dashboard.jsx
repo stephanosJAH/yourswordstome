@@ -148,21 +148,21 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Effects */}
-      <div className="background-gradient fixed inset-0 z-0"></div>
-      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      <div className="background-gradient fixed inset-0 z-0" aria-hidden="true"></div>
+      <div className="ethereal-blur fixed inset-0 z-0" aria-hidden="true"></div>
       
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}
         <header className="w-full px-4 sm:px-8 py-4 sm:py-6">
-          <div className="container mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-0">
+          <nav className="container mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-0" aria-label="Navegación del dashboard">
             <div className="flex items-center space-x-2">
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-light-text">YourWordsToMe</span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <span className="text-xs sm:text-sm font-medium text-light-subtle hidden sm:inline">Hola, {getFirstName(user?.displayName)}!</span>
-              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full">
-                <Sparkles className="text-accent" size={16} />
+              <div className="flex items-center space-x-1.5 sm:space-x-2 bg-blue-100 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full" aria-label={`Tokens disponibles: ${isUnlimited ? 'ilimitados' : (userData?.tokens || 0)}`}>
+                <Sparkles className="text-accent" size={16} aria-hidden="true" />
                 <span className="font-semibold text-accent text-xs sm:text-base">
                   {isUnlimited ? '∞' : (userData?.tokens || 0)}
                 </span>
@@ -170,47 +170,47 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => navigate('/profile')}
-                className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0"
-                title="Ver perfil"
+                className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-200 hover:ring-accent transition-all duration-300 flex-shrink-0 touch-target"
+                aria-label="Ver perfil"
               >
                 {user?.photoURL ? (
-                  <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                  <img src={user.photoURL} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-blue-100 flex items-center justify-center">
-                    <User size={16} className="text-accent" />
+                    <User size={16} className="text-accent" aria-hidden="true" />
                   </div>
                 )}
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md"
-                title="Cerrar sesión"
+                className="bg-white/60 backdrop-blur-sm border border-gray-200/80 text-light-text hover:bg-white font-semibold py-2 px-3 sm:px-5 rounded-full flex items-center gap-1.5 sm:gap-2 transition-all duration-300 shadow-sm hover:shadow-md touch-target"
+                aria-label="Cerrar sesión"
               >
-                <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
+                <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" aria-hidden="true" />
                 <span className="hidden sm:inline text-sm">Salir</span>
               </button>
             </div>
-          </div>
+          </nav>
         </header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center px-4 sm:px-6 -mt-10">
+      <main className="flex-grow flex flex-col items-center justify-center px-4 sm:px-6" id="main-content">
 
         {/* section generate */}
         <div id="generate-section" className="min-h-screen max-w-2xl w-full mx-auto flex flex-col items-center justify-center py-8">
 
           {/* Jumbotron */}
-          <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-14 px-2">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-accent mb-3 leading-tight">
-              Hola <span className="italic text-accent font-normal text-3xl sm:text-4xl md:text-5xl" style={{ fontFamily: 'Playfair Display' }}>{getFirstName(user?.displayName)}</span>, genera tu versículo personalizado
+          <div className="text-center mb-8 sm:mb-12 mt-8 sm:mt-14 px-2 animate-fade-in-up">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-light-text mb-3 leading-tight">
+              Hola <span className="italic text-primary font-normal text-3xl sm:text-4xl md:text-5xl font-serif">{getFirstName(user?.displayName)}</span>, genera tu versículo personalizado
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 px-2">
+            <p className="text-sm sm:text-base text-light-subtle px-2">
               Ingresa la referencia de tu versículo favorito y personalízalo con IA
             </p>
           </div>
 
           {/* Formulario */}
-          <div className="w-full p-1.5 sm:p-2 bg-white/65 backdrop-blur-md border border-gray-200 rounded-large shadow-lg">
+          <div className="w-full p-1.5 sm:p-2 glass-card shadow-lg animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s' }}>
             <div className="flex flex-col gap-3 sm:gap-4 p-3 sm:p-6">
               {/* Input de Referencia */}
               <div>
@@ -288,25 +288,26 @@ const Dashboard = () => {
 
               {/* Error Message */}
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  {error}
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-start gap-2" role="alert" aria-live="assertive">
+                  <span aria-hidden="true" className="text-red-500 mt-0.5">⚠</span>
+                  <span>{error}</span>
                 </div>
               )}              {/* Generate Buttons */}
               <div className="space-y-2.5 sm:space-y-3">
                 <button
                   onClick={() => handleGenerate()}
                   disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
-                  className="w-full bg-primary text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-primary-dark transition-colors duration-300 flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg shadow-lg hover:shadow-primary/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-primary text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg shadow-lg hover:shadow-primary/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
                 >
                   {loading ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" aria-hidden="true"></div>
                       <span>Generando...</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles size={18} className="sm:w-5 sm:h-5" />
-                      <span>Generar versiculo para vos!</span>
+                      <Sparkles size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
+                      <span>Generar versículo para vos!</span>
                     </>
                   )}
                 </button>
@@ -314,9 +315,9 @@ const Dashboard = () => {
                 <button
                   onClick={handleOpenModal}
                   disabled={loading || (!isUnlimited && (!userData || userData.tokens <= 0))}
-                  className="w-full bg-white border-2 border-gray-300 text-accent hover:bg-blue-50 hover:border-accent font-semibold py-3 sm:py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base"
+                  className="w-full bg-white border-2 border-gray-300 text-accent hover:bg-blue-50 hover:border-accent font-semibold py-3 sm:py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base touch-target"
                 >
-                  <Users size={18} className="sm:w-5 sm:h-5" />
+                  <Users size={18} className="sm:w-5 sm:h-5" aria-hidden="true" />
                   <span>Generar para otra persona</span>
                 </button>
               </div>
@@ -352,7 +353,7 @@ const Dashboard = () => {
           </div>*/}
 
           {/* Explorar por temas */}
-          <div className="mt-4 p-4 sm:p-6 bg-white/75 backdrop-blur-sm rounded-lg border border-gray-200">
+          <div className="mt-4 p-4 sm:p-6 surface-elevated animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s' }}>
             <h3 className="text-xs sm:text-sm font-semibold text-light-text mb-2.5 sm:mb-3">
               Explorar por tema:
             </h3>
@@ -401,10 +402,10 @@ const Dashboard = () => {
         {!versesLoading && verses.length > 0 && (
         <div id="favorites-section" className="max-w-4xl w-full mx-auto py-16 px-4">
           <div className="text-center mb-8 sm:mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full mb-4 sm:mb-6">
-              <Clock size={32} className="sm:w-10 sm:h-10 text-accent" />
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-2xl mb-4 sm:mb-6">
+              <Clock size={32} className="sm:w-10 sm:h-10 text-primary" aria-hidden="true" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-accent mb-3 sm:mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-light-text mb-3 sm:mb-4">
               Últimos versículos generados
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-md mx-auto mb-4">
@@ -460,27 +461,49 @@ const Dashboard = () => {
                       styleConfig: verse.styleConfig || null
                     }
                   })}
-                  className="bg-white/85 backdrop-blur-md rounded-xl shadow-md p-5 border border-gray-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+                  className="glass-card glass-card-hover p-5 cursor-pointer group"
+                  role="article"
+                  aria-label={`Versículo ${verse.verseReference}`}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate('/verse', {
+                        state: {
+                          verseData: {
+                            reference: verse.verseReference,
+                            originalText: verse.originalText,
+                            personalizedText: verse.personalizedText,
+                            translation: verse.translation
+                          },
+                          verseId: verse.id,
+                          isFavorite: verse.isFavorite,
+                          styleConfig: verse.styleConfig || null
+                        }
+                      });
+                    }
+                  }}
                 >
                   {/* Header con referencia y acciones */}
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-semibold text-accent bg-blue-100 px-2 py-1 rounded-full">
+                    <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
                       {verse.verseReference}
                     </span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleFavorite(verse.id, verse.isFavorite);
                         }}
-                        className={`p-2 rounded-full transition-all ${
+                        className={`p-2 rounded-full transition-all touch-target ${
                           verse.isFavorite 
                             ? 'text-red-500 bg-red-50 hover:bg-red-100' 
                             : 'text-gray-400 hover:text-red-500 hover:bg-red-50'
                         }`}
-                        title={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        aria-label={verse.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                        aria-pressed={verse.isFavorite}
                       >
-                        <Heart size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} />
+                        <Heart size={18} fill={verse.isFavorite ? 'currentColor' : 'none'} aria-hidden="true" />
                       </button>
                       <button
                         onClick={(e) => {
@@ -489,10 +512,10 @@ const Dashboard = () => {
                             removeVerse(verse.id);
                           }
                         }}
-                        className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                        title="Eliminar versículo"
+                        className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all touch-target"
+                        aria-label={`Eliminar versículo ${verse.verseReference}`}
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={18} aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -525,9 +548,9 @@ const Dashboard = () => {
             <div className="mt-6 text-center">
               <Link
                 to="/history"
-                className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary-dark transition-colors touch-target"
               >
-                <BookOpen size={16} />
+                <BookOpen size={16} aria-hidden="true" />
                 Ver historial completo
               </Link>
             </div>
@@ -535,7 +558,7 @@ const Dashboard = () => {
         )}
 
         {/* section footer */}
-        <footer className="w-full bg-gradient-to-t from-primary/5 to-transparent border-t border-gray-200 py-8 sm:py-12 px-4">
+        <footer className="w-full bg-gradient-to-t from-primary/5 to-transparent border-t border-gray-200 py-8 sm:py-12 px-4" role="contentinfo">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
               {/* Columna 1 - Sobre el proyecto */}
@@ -549,7 +572,7 @@ const Dashboard = () => {
               {/* Columna 2 - Enlaces */}
               <div className="text-center">
                 <h4 className="text-sm sm:text-base font-semibold text-light-text mb-2 sm:mb-3">Enlaces</h4>
-                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-light-subtle">
+                <nav className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-light-subtle" aria-label="Enlaces del pie de página">
                   <li>
                     <Link 
                       to="/about" 
@@ -577,7 +600,7 @@ const Dashboard = () => {
                       Términos de uso
                     </Link>
                   </li>
-                </ul>
+                </nav>
               </div>
               
               {/* Columna 3 - Contacto */}

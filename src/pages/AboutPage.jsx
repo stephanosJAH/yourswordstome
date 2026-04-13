@@ -13,40 +13,41 @@ const AboutPage = () => {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Background Effects */}
-      <div className="background-gradient fixed inset-0 z-0"></div>
-      <div className="ethereal-blur fixed inset-0 z-0"></div>
+      <div className="background-gradient fixed inset-0 z-0" aria-hidden="true"></div>
+      <div className="ethereal-blur fixed inset-0 z-0" aria-hidden="true"></div>
       
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}
         <header className="w-full px-4 sm:px-8 py-6">
-          <div className="container mx-auto flex justify-between items-center">
+          <nav className="container mx-auto flex justify-between items-center" aria-label="Navegación">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-light-text hover:text-primary transition-colors"
+              className="flex items-center gap-2 text-light-text hover:text-primary transition-colors touch-target"
+              aria-label="Volver a la página anterior"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" aria-hidden="true" />
               <span>Volver</span>
             </button>
-            <h1 className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</h1>
-          </div>
+            <span className="text-xl font-bold tracking-tight text-light-text">YourWordsToMe</span>
+          </nav>
         </header>
 
         {/* Main Content */}
-        <main className="container mx-auto px-4 py-12 max-w-4xl">
-          <div className="glass-card p-8 md:p-12 animate-fade-in-up">
-            <h2 
+        <main className="container mx-auto px-4 py-12 max-w-4xl" id="main-content">
+          <article className="glass-card p-8 md:p-12 animate-fade-in-up">
+            <h1 
               className="text-4xl md:text-5xl font-bold text-light-text mb-6"
               style={{ viewTransitionName: 'page-title-about' }}
             >
               Acerca de <span className="text-primary font-serif italic">YourWordsToMe</span>
-            </h2>
+            </h1>
 
             <div className="space-y-8 text-light-text/80 text-lg leading-relaxed">
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <Heart className="w-6 h-6 text-primary" />
-                  <h3 className="text-2xl font-semibold text-light-text">Nuestra Misión</h3>
+                  <Heart className="w-6 h-6 text-primary" aria-hidden="true" />
+                  <h2 className="text-2xl font-semibold text-light-text">Nuestra Misión</h2>
                 </div>
                 <p>
                   YourWordsToMe nace del deseo de conectar a las personas con la Palabra de Dios de una manera 
@@ -57,8 +58,8 @@ const AboutPage = () => {
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                  <h3 className="text-2xl font-semibold text-light-text">¿Qué Hacemos?</h3>
+                  <Sparkles className="w-6 h-6 text-primary" aria-hidden="true" />
+                  <h2 className="text-2xl font-semibold text-light-text">¿Qué Hacemos?</h2>
                 </div>
                 <p>
                   Utilizamos tecnología de inteligencia artificial avanzada para ayudarte a descubrir versículos 
@@ -70,8 +71,8 @@ const AboutPage = () => {
 
               <section>
                 <div className="flex items-center gap-3 mb-4">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                  <h3 className="text-2xl font-semibold text-light-text">Nuestra Visión</h3>
+                  <BookOpen className="w-6 h-6 text-primary" aria-hidden="true" />
+                  <h2 className="text-2xl font-semibold text-light-text">Nuestra Visión</h2>
                 </div>
                 <p>
                   Aspiramos a ser un puente entre la sabiduría eterna de las Escrituras y las necesidades 
@@ -81,7 +82,7 @@ const AboutPage = () => {
               </section>
 
               <section className="pt-6 border-t border-primary/20">
-                <h3 className="text-2xl font-semibold text-light-text mb-4">Características</h3>
+                <h2 className="text-2xl font-semibold text-light-text mb-4">Características</h2>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-primary mt-1">•</span>
@@ -110,12 +111,12 @@ const AboutPage = () => {
                 </p>
               </section>
             </div>
-          </div>
+          </article>
         </main>
 
         {/* Footer */}
-        <footer className="container mx-auto px-4 py-8 text-center text-light-text/60">
-          <p>&copy; 2024 YourWordsToMe. Hecho con ❤️ para la gloria de Dios.</p>
+        <footer className="container mx-auto px-4 py-8 text-center text-light-subtle" role="contentinfo">
+          <p>&copy; {new Date().getFullYear()} YourWordsToMe. Hecho con <span aria-label="amor">❤️</span> para la gloria de Dios.</p>
         </footer>
       </div>
     </div>
